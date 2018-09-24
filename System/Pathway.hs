@@ -1,5 +1,5 @@
 module System.Pathway (Path (..), Points (..), Reference (..)
-	, part, (<^@>), (<^#>), (</@>), (</#>)) where
+	, part, (<^>), (</>)) where
 
 import "base" Data.Function ((.), ($))
 import "base" Data.Maybe (Maybe (Just, Nothing))
@@ -31,18 +31,12 @@ instance Show (Path Relative points) where
 part :: String -> Path referece points
 part x = Path $ x :< Nothing
 
-(<^@>) :: Path Relative Directory -> Path Relative Directory -> Path Relative Directory
-Path (x :< Nothing) <^@> Path that = Path $ x :< Just that
-Path (x :< Just this) <^@> Path that = part x <^@> (Path this <^@> Path that)
+-- | Concatenate Relative and Relative paths
+(<^>) :: Path Relative Directory -> Path Relative points -> Path Relative points
+Path (x :< Nothing) <^> Path that = Path $ x :< Just that
+Path (x :< Just this) <^> Path that = part x <^> (Path this <^> Path that)
 
-(<^#>) :: Path Relative Directory -> Path Relative File -> Path Relative File
-Path (x :< Nothing) <^#> Path that = Path $ x :< Just that
-Path (x :< Just this) <^#> Path that = part x <^#> (Path this <^#> Path that)
-
-(</@>) :: Path Absolute Directory -> Path Relative Directory -> Path Absolute Directory
-Path absolute </@> Path (x :< Nothing) = Path . (:<) x . Just $ absolute
-Path absolute </@> Path (x :< Just xs) = (Path . (:<) x . Just $ absolute) </@> Path xs
-
-(</#>) :: Path Absolute Directory -> Path Relative File -> Path Absolute File
-Path absolute </#> Path (x :< Nothing) = Path . (:<) x . Just $ absolute
-Path absolute </#> Path (x :< Just xs) = (Path . (:<) x . Just $ absolute) </#> Path xs
+-- | Concatenate Absolute and Relative paths
+(</>) :: Path Absolute Directory -> Path Relative points -> Path Absolute points
+Path absolute </> Path (x :< Nothing) = Path . (:<) x . Just $ absolute
+Path absolute </> Path (x :< Just xs) = (Path . (:<) x . Just $ absolute) </> Path xs
