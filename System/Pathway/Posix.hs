@@ -2,12 +2,13 @@ module System.Pathway.Posix where
 
 import "base" Data.Foldable (foldr)
 import "base" Data.Function ((.), ($))
-import "base" Data.Functor ((<$>))
+import "base" Data.Functor ((<$>), ($>))
 import "base" Data.List (reverse, tail)
 import "base" Data.Maybe (Maybe (Just, Nothing))
 import "base" Data.String (String)
 import "base" System.IO (IO)
-import "directory" System.Directory (getCurrentDirectory)
+import "base" Text.Show (show)
+import "directory" System.Directory (getCurrentDirectory, setCurrentDirectory)
 import "free" Control.Comonad.Cofree (Cofree ((:<)))
 import "split" Data.List.Split (splitOn)
 
@@ -22,3 +23,6 @@ current = parse <$> getCurrentDirectory where
 	parse directory = (<$>) Path
 		. foldr (\el -> Just . (:<) el) Nothing
 		. reverse . splitOn "/" . tail $ directory
+
+change :: Path Absolute Directory -> IO (Path Absolute Directory)
+change path = setCurrentDirectory (show path) $> path
