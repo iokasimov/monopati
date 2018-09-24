@@ -1,4 +1,4 @@
-module Data.Pathway where
+module System.Pathway where
 
 import "base" Data.Function ((.), ($))
 import "base" Data.Maybe (Maybe (Just, Nothing))
@@ -7,7 +7,7 @@ import "free" Control.Comonad.Cofree (Cofree ((:<)))
 
 type Stack = Cofree Maybe
 
--- | It helps define some rules for merging paths
+-- | Relative paths defined in direct order, absolute - in reverse
 data Reference = Absolute | Relative
 
 -- | Path may points to a directory or a file
