@@ -21,7 +21,7 @@ data Path (reference :: Reference) (points :: Points) = Path (Stack String)
 
 instance Show (Path Absolute points) where
 	show (Path (x :< Just xs)) = show (Path @Absolute xs) <> "/" <> x
-	show (Path (x :< Nothing)) = x
+	show (Path (x :< Nothing)) = "/" <> x
 
 instance Show (Path Relative points) where
 	show (Path (x :< Just xs)) = x <> "/" <> show (Path @Relative xs)
