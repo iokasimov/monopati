@@ -1,0 +1,4 @@
+dist*
+.DS_Store
+.ghc.environment.*
+publish-docs.sh
