@@ -1,4 +1,5 @@
-module System.Pathway where
+module System.Pathway (Path (..), Points (..), Reference (..)
+	, part, (<^@>), (<^#>), (</@>), (</#>)) where
 
 import "base" Data.Function ((.), ($))
 import "base" Data.Maybe (Maybe (Just, Nothing))
