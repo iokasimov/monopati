@@ -19,6 +19,5 @@ source-repository head
 library
   exposed-modules: System.Pathway, System.Pathway.Posix, System.Pathway.Windows
   build-depends: base, free
-  default-language: Haskell2010s
-  default-extensions: DataKinds, KindSignatures, NoImplicitPrelude, PackageImports, TypeApplications
+  default-extensions: DataKinds, FlexibleInstances, KindSignatures, NoImplicitPrelude, PackageImports, TypeApplications
   ghc-options: -fno-warn-tabs
