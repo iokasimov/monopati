@@ -17,7 +17,7 @@ data Reference = Absolute | Relative
 data Points = Directory | File
 
 -- | These two phantom paramaters needs for statis analysis
-data Path (reference :: Reference) (points :: Points) = Path (Stack String)
+data Path (reference :: Reference) (points :: Points) = Path { path :: Stack String }
 
 instance Show (Path Absolute points) where
 	show (Path (x :< Just xs)) = show (Path @Absolute xs) <> "/" <> x
