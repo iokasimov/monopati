@@ -17,7 +17,7 @@ source-repository head
   location: https://github.com/iokasimov/monopati.git
 
 library
-  exposed-modules: System.Monopati, System.Monopati.Posix, System.Monopati.Windows
   build-depends: base, directory, comonad, free, split
   default-extensions: DataKinds, FlexibleInstances, KindSignatures, NoImplicitPrelude, PackageImports, TypeApplications
+  exposed-modules: System.Monopati, System.Monopati.Posix, System.Monopati.Windows
   ghc-options: -fno-warn-tabs

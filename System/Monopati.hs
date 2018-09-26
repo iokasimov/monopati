@@ -17,7 +17,7 @@ data Reference = Absolute | Relative
 -- | Path may points to a directory or a file
 data Points = Directory | File
 
--- | These two phantom paramaters needs for statis analysis
+-- | These two phantom paramaters needs for static analysis
 data Path (reference :: Reference) (points :: Points) = Path { path :: Stack String }
 
 instance Show (Path Absolute points) where
