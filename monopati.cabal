@@ -1,7 +1,7 @@
 name:                monopati
 version:             0.1.0
-synopsis:            ...
-description:         ...
+synopsis:            Well-typed paths
+description:         Despite the fact that there are a plenty of various well-typed "path" libraries in Haskell, I decided to write new one that I would like to use.
 homepage:            https://github.com/iokasimov/monopati
 license:             BSD3
 license-file:        LICENSE
