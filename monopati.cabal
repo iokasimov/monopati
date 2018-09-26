@@ -18,6 +18,6 @@ source-repository head
 
 library
   exposed-modules: System.Monopati, System.Monopati.Posix, System.Monopati.Windows
-  build-depends: base, directory, free, split
+  build-depends: base, directory, comonad, free, split
   default-extensions: DataKinds, FlexibleInstances, KindSignatures, NoImplicitPrelude, PackageImports, TypeApplications
   ghc-options: -fno-warn-tabs

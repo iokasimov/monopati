@@ -1,11 +1,12 @@
 module System.Monopati (Path (..), Points (..), Reference (..)
-	, part, (<^>), (</>)) where
+	, part, points, next, (<^>), (</>)) where
 
 import "base" Data.Function ((.), ($))
 import "base" Data.Maybe (Maybe (Just, Nothing))
 import "base" Data.String (String)
 import "base" Data.Semigroup ((<>))
 import "base" Text.Show (Show (show))
+import "comonad" Control.Comonad (extract)
 import "free" Control.Comonad.Cofree (Cofree ((:<)))
 
 type Stack = Cofree Maybe
@@ -30,6 +31,12 @@ instance Show (Path Relative points) where
 -- | Immerse some string into a path component
 part :: String -> Path referece points
 part x = Path $ x :< Nothing
+
+points :: Path Absolute points -> String
+points = extract . path
+
+next :: Path Relative points -> String
+next = extract . path
 
 -- | Concatenate Relative and Relative paths
 (<^>) :: Path Relative Directory -> Path Relative points -> Path Relative points
