@@ -1,4 +1,4 @@
-module System.Pathway (Path (..), Points (..), Reference (..)
+module System.Monopati (Path (..), Points (..), Reference (..)
 	, part, (<^>), (</>)) where
 
 import "base" Data.Function ((.), ($))

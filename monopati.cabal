@@ -1,8 +1,8 @@
-name:                pathway
+name:                monopati
 version:             0.1.0
 synopsis:            ...
 description:         ...
-homepage:            https://github.com/iokasimov/pathway
+homepage:            https://github.com/iokasimov/monopati
 license:             BSD3
 license-file:        LICENSE
 author:              Murat Kasimov
@@ -14,10 +14,10 @@ cabal-version:       >= 1.10
 
 source-repository head
   type: git
-  location: https://github.com/iokasimov/pathway.git
+  location: https://github.com/iokasimov/monopati.git
 
 library
-  exposed-modules: System.Pathway, System.Pathway.Posix, System.Pathway.Windows
+  exposed-modules: System.Monopati, System.Monopati.Posix, System.Monopati.Windows
   build-depends: base, directory, free, split
   default-extensions: DataKinds, FlexibleInstances, KindSignatures, NoImplicitPrelude, PackageImports, TypeApplications
   ghc-options: -fno-warn-tabs

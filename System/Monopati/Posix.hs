@@ -1,4 +1,4 @@
-module System.Pathway.Posix where
+module System.Monopati.Posix where
 
 import "base" Control.Applicative ((*>))
 import "base" Data.Bool (Bool (True))
@@ -15,7 +15,7 @@ import "directory" System.Directory
 import "free" Control.Comonad.Cofree (Cofree ((:<)))
 import "split" Data.List.Split (splitOn)
 
-import System.Pathway (Path (Path, path), Reference (Absolute, Relative), Points (Directory), (</>))
+import System.Monopati (Path (Path, path), Reference (Absolute, Relative), Points (Directory), (</>))
 
 -- | Return Nothing, if current working directory is root (cwd)
 current :: IO (Maybe (Path Absolute Directory))
