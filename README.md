@@ -22,8 +22,8 @@ We use stack as a core data structure for path - it will become clear later why 
 
 ```haskell
 Path Relative Directory + Path Relative Directory = Path Relative Directory
-"usr/local/" + "etc/" = "usr/local/etc/"
-Path Relative Directory + Path Relative File = Path Relative Directory
+"usr/local/" <> "etc/" = "usr/local/etc/"
+Path Relative Directory + Path Relative File = Path Relative File
 "bin/" <> "git" = "bin/git"
 Path Absolute Directory + Path Relative Directory = Path Absolute Directory
 "/usr/local/" <> "etc/" = "/usr/local/etc/" =
