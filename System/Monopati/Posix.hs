@@ -10,12 +10,24 @@ import "base" Data.Maybe (Maybe (Just, Nothing), maybe)
 import "base" Data.String (String)
 import "base" System.IO (IO)
 import "base" Text.Show (show)
-import "directory" System.Directory
-	(createDirectoryIfMissing, getCurrentDirectory, setCurrentDirectory)
+import "directory" System.Directory (createDirectoryIfMissing, getCurrentDirectory, getHomeDirectory, setCurrentDirectory)
 import "free" Control.Comonad.Cofree (Cofree ((:<)))
 import "split" Data.List.Split (splitOn)
 
 import System.Monopati (Path (Path, path), Reference (Absolute, Relative), Points (Directory), (</>))
+
+data Starts = Root | Home
+
+newtype Entry (starts :: Starts) = Entry
+	{ entry :: Maybe (Path Absolute Directory) }
+
+(*/*) :: Entry Root -> Path Relative points -> Path Absolute points
+Entry Nothing */* Path relative = Path @Absolute relative
+Entry (Just absolute) */* relative = absolute </> relative
+
+(*~*) :: Entry Home -> Path Relative points -> Path Absolute points
+Entry Nothing *~* Path relative = Path @Absolute relative
+Entry (Just absolute) *~* relative = absolute </> relative
 
 -- | Return Nothing, if current working directory is root (cwd)
 current :: IO (Maybe (Path Absolute Directory))
