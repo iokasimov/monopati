@@ -1,4 +1,5 @@
-module System.Monopati.Posix where
+module System.Monopati.Posix (Entry (..), Ending (..), Starts (..)
+	, (*/*), (*~*), root, home, current, change, create) where
 
 import "base" Control.Applicative ((*>))
 import "base" Data.Bool (Bool (True))
@@ -31,6 +32,18 @@ Entry (Just absolute) */* Ending relative = absolute </> relative
 (*~*) :: Entry Home -> Ending Home points -> Path Absolute points
 Entry Nothing *~* Ending (Path relative) = Path @Absolute relative
 Entry (Just absolute) *~* Ending relative = absolute </> relative
+
+root :: Entry Root
+root = Entry Nothing
+
+home :: IO (Entry Home)
+home = Entry . parse <$> getHomeDirectory where
+
+	parse :: String -> Maybe (Path Absolute Directory)
+	parse "/" = Nothing
+	parse directory = (<$>) Path
+		. foldr (\el -> Just . (:<) el) Nothing
+		. reverse . splitOn "/" . tail $ directory
 
 -- | Return Nothing, if current working directory is root (cwd)
 current :: IO (Maybe (Path Absolute Directory))
