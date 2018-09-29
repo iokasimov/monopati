@@ -21,13 +21,16 @@ data Starts = Root | Home
 newtype Entry (starts :: Starts) = Entry
 	{ entry :: Maybe (Path Absolute Directory) }
 
-(*/*) :: Entry Root -> Path Relative points -> Path Absolute points
-Entry Nothing */* Path relative = Path @Absolute relative
-Entry (Just absolute) */* relative = absolute </> relative
+newtype Ending (starts :: Starts) (points :: Points) = Ending
+	{ ending :: Path Relative points }
 
-(*~*) :: Entry Home -> Path Relative points -> Path Absolute points
-Entry Nothing *~* Path relative = Path @Absolute relative
-Entry (Just absolute) *~* relative = absolute </> relative
+(*/*) :: Entry Root -> Ending Root points -> Path Absolute points
+Entry Nothing */* Ending (Path relative) = Path @Absolute relative
+Entry (Just absolute) */* Ending relative = absolute </> relative
+
+(*~*) :: Entry Home -> Ending Home points -> Path Absolute points
+Entry Nothing *~* Ending (Path relative) = Path @Absolute relative
+Entry (Just absolute) *~* Ending relative = absolute </> relative
 
 -- | Return Nothing, if current working directory is root (cwd)
 current :: IO (Maybe (Path Absolute Directory))
