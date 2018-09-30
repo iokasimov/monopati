@@ -14,11 +14,10 @@ data Points = Directory | File -- What the path points to?
 data Origin = Root | Home | Vague -- What is the beginning of the path?
 data To -- Dummy type needed only for beauty type declarations
 
-type Stack = Cofree Maybe
+type Path = Cofree Maybe String
 
 -- | The internal type of path representation
-newtype Outline (origin :: Origin) (points :: Points)
-	= Outline { outline :: Stack String }
+newtype Outline (origin :: Origin) (points :: Points) = Outline { outline :: Path }
 
 instance Show (Outline Root Directory) where
 	show = flip (<>) "/" . foldr (\x acc -> acc <> "/" <> x) "" . outline
@@ -37,8 +36,6 @@ instance Show (Outline Vague Directory) where
 
 instance Show (Outline Vague File) where
 	show = init . foldr (\x acc -> x <> "/" <> acc) "" . outline
-
-newtype Path = Path { path :: Stack String }
 
 type family Absolute (path :: Type) (to :: Type) (points :: Points) :: Type where
 	Absolute Path To points = Outline Root points
