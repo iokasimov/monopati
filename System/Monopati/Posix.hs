@@ -1,9 +1,10 @@
 module System.Monopati.Posix where
 
+import "base" Data.Eq (Eq ((==)))
 import "base" Data.Foldable (Foldable (foldr))
 import "base" Data.Function ((.), ($), flip)
 import "base" Data.Kind (Type)
-import "base" Data.List (init)
+import "base" Data.List (filter, init)
 import "base" Data.Maybe (Maybe (Just, Nothing))
 import "base" Data.Semigroup (Semigroup ((<>)))
 import "base" Data.String (String)
@@ -47,7 +48,7 @@ type family Relative (path :: Type) (to :: Type) (points :: Points) :: Type wher
 	Relative Path To points = Outline Vague points
 
 part :: String -> Outline origin points
-part x = Outline $ x :< Nothing
+part x = Outline $ (filter (== '/') x) :< Nothing
 
 (<^>) :: Relative Path To Directory -> Relative Path To points -> Relative Path To points
 Outline (x :< Nothing) <^> Outline that = Outline $ x :< Just that
