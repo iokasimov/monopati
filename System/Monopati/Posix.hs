@@ -1,9 +1,13 @@
 module System.Monopati.Posix where
 
-import "base" Data.Function ((.), ($))
+import "base" Data.Foldable (Foldable (foldr))
+import "base" Data.Function ((.), ($), flip)
 import "base" Data.Kind (Type)
+import "base" Data.List (init)
 import "base" Data.Maybe (Maybe (Just, Nothing))
+import "base" Data.Semigroup (Semigroup ((<>)))
 import "base" Data.String (String)
+import "base" Text.Show (Show (show))
 import "free" Control.Comonad.Cofree (Cofree ((:<)))
 
 data Points = Directory | File -- What the path points to?
@@ -15,6 +19,24 @@ type Stack = Cofree Maybe
 -- | The internal type of path representation
 newtype Outline (origin :: Origin) (points :: Points)
 	= Outline { outline :: Stack String }
+
+instance Show (Outline Root Directory) where
+	show = flip (<>) "/" . foldr (\x acc -> acc <> "/" <> x) "" . outline
+
+instance Show (Outline Root File) where
+	show = foldr (\x acc -> acc <> "/" <> x) "" . outline
+
+instance Show (Outline Home Directory) where
+	show = (<>) "~/" . foldr (\x acc -> x <> "/" <> acc) "" . outline
+
+instance Show (Outline Home File) where
+	show = (<>) "~/" . init . foldr (\x acc -> x <> "/" <> acc) "" . outline
+
+instance Show (Outline Vague Directory) where
+	show = foldr (\x acc -> x <> "/" <> acc) "" . outline
+
+instance Show (Outline Vague File) where
+	show = init . foldr (\x acc -> x <> "/" <> acc) "" . outline
 
 newtype Path = Path { path :: Stack String }
 
