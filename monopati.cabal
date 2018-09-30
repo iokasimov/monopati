@@ -18,7 +18,7 @@ source-repository head
 
 library
   build-depends: base == 4.*, directory, comonad, free, split
-  default-extensions: DataKinds, FlexibleInstances, KindSignatures, NoImplicitPrelude, PackageImports, TypeApplications
+  default-extensions: DataKinds, FlexibleInstances, KindSignatures, NoImplicitPrelude, PackageImports, TypeApplications, TypeFamilies
   default-language: Haskell2010
   exposed-modules: System.Monopati.Posix, System.Monopati.Windows
   ghc-options: -fno-warn-tabs
