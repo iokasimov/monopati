@@ -11,7 +11,7 @@ import "directory" System.Directory (getCurrentDirectory, getHomeDirectory)
 import "free" Control.Comonad.Cofree (Cofree ((:<)))
 import "split" Data.List.Split (splitOn)
 
-import System.Monopati.Posix.Combinators ( Points (Directory), To, Path, Outline (Outline), Absolute, Homeward, Relative)
+import System.Monopati.Posix.Combinators (Points (Directory), To, Path, Outline (Outline), Absolute, Homeward, Relative)
 
 current :: IO (Maybe (Absolute Path To Directory))
 current = parse <$> getCurrentDirectory

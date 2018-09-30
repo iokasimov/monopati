@@ -14,10 +14,19 @@ import "base" Data.String (String)
 import "base" Text.Show (Show (show))
 import "free" Control.Comonad.Cofree (Cofree ((:<)))
 
-data Points = Directory | File -- What the path points to?
-data Origin = Root | Home | Vague -- What is the beginning of the path?
-data To -- Dummy type needed only for beauty type declarations
+-- | What the path points to?
+data Points = Directory | File
 
+-- | What is the beginning of the path?
+data Origin
+	= Root -- ^ (@/@) Starting point for absolute path
+	| Home -- ^ (@~/@) Indication of home directory
+	| Vague -- ^ Uncertain relative path
+
+-- | Dummy type needed only for beautiful type declarations
+data To
+
+-- | Path is non-empty sequence of folders or file (in the end)
 type Path = Cofree Maybe String
 
 -- | The internal type of path representation
@@ -50,6 +59,7 @@ type family Homeward (path :: Type) (to :: Type) (points :: Points) :: Type wher
 type family Relative (path :: Type) (to :: Type) (points :: Points) :: Type where
 	Relative Path To points = Outline Vague points
 
+-- | Immerse string into a path, filter slashes
 part :: String -> Outline origin points
 part x = Outline $ (filter (== '/') x) :< Nothing
 
