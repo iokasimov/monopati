@@ -5,4 +5,5 @@
 
 # 0.1.2
 * Split platform-depends modules on Calls and Combinators
-* Return functions that do system calls
+* Add `current`, `home`, `create`, `come` and `remove` calls
+* Add `parent` combinator

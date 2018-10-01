@@ -1,7 +1,7 @@
 module System.Monopati.Posix.Combinators
 	( Points (..), Origin (..), To, Path, Outline (..)
 	, Absolute (..), Homeward (..), Relative (..)
-	, part, (<^>), (</>), (<~/>)) where
+	, part, parent, (<^>), (</>), (<~/>)) where
 
 import "base" Data.Eq (Eq ((==)))
 import "base" Data.Foldable (Foldable (foldr))
@@ -74,3 +74,6 @@ Outline absolute </> Outline (x :< Just xs) = (Outline . (:<) x . Just $ absolut
 (<~/>) :: Absolute Path To points -> Homeward Path To points -> Absolute Path To points
 Outline absolute <~/> Outline (x :< Nothing) = Outline . (:<) x . Just $ absolute
 Outline absolute <~/> Outline (x :< Just xs) = (Outline . (:<) x . Just $ absolute) <~/> Outline xs
+
+parent :: Absolute Path To points -> Maybe (Absolute Path To Directory)
+parent = (<$>) Outline . unwrap . outline
