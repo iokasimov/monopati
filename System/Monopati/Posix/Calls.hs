@@ -1,4 +1,4 @@
-module System.Monopati.Posix.Calls (current, home) where
+module System.Monopati.Posix.Calls (current, home, create, change, remove) where
 
 import "base" Data.Bool (Bool (True))
 import "base" Data.Foldable (Foldable (foldr))
@@ -30,11 +30,14 @@ parse directory = (<$>) Outline
 	. foldr (\el -> Just . (:<) el) Nothing
 	. reverse . splitOn "/" . tail $ directory
 
+-- | Create a directory (mkdir)
 create :: Absolute Path To Directory -> IO ()
 create = createDirectoryIfMissing True . show
 
-come :: Absolute Path To Directory -> IO ()
-come = setCurrentDirectory . show
+-- | Change directory (cd)
+change :: Absolute Path To Directory -> IO ()
+change = setCurrentDirectory . show
 
+-- | Remove directory (rm -rf)
 remove :: Absolute Path To Directory -> IO ()
 remove = removeDirectoryRecursive . show
