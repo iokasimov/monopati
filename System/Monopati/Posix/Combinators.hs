@@ -6,13 +6,14 @@ module System.Monopati.Posix.Combinators
 import "base" Data.Eq (Eq ((==)))
 import "base" Data.Foldable (Foldable (foldr))
 import "base" Data.Function ((.), ($), flip)
+import "base" Data.Functor ((<$>))
 import "base" Data.Kind (Type)
 import "base" Data.List (filter, init)
 import "base" Data.Maybe (Maybe (Just, Nothing))
 import "base" Data.Semigroup (Semigroup ((<>)))
 import "base" Data.String (String)
 import "base" Text.Show (Show (show))
-import "free" Control.Comonad.Cofree (Cofree ((:<)))
+import "free" Control.Comonad.Cofree (Cofree ((:<)), unwrap)
 
 -- | What the path points to?
 data Points = Directory | File

@@ -1,5 +1,6 @@
 module System.Monopati.Posix.Calls (current, home) where
 
+import "base" Data.Bool (Bool (True))
 import "base" Data.Foldable (Foldable (foldr))
 import "base" Data.Function ((.), ($))
 import "base" Data.Functor ((<$>))
@@ -7,9 +8,9 @@ import "base" Data.List (tail, reverse)
 import "base" Data.Maybe (Maybe (Just, Nothing))
 import "base" Data.String (String)
 import "base" System.IO (IO)
-import "directory" System.Directory
-	( createDirectoryIfMissing, getCurrentDirectory
-	, getHomeDirectory, setCurrentDirectory)
+import "base" Text.Show (show)
+import "directory" System.Directory (createDirectoryIfMissing, getCurrentDirectory
+	, getHomeDirectory, removeDirectoryRecursive, setCurrentDirectory)
 import "free" Control.Comonad.Cofree (Cofree ((:<)))
 import "split" Data.List.Split (splitOn)
 
