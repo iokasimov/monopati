@@ -1,6 +1,8 @@
-module System.Monopati.Posix
-	( module System.Monopati.Posix.Calls
-	, module System.Monopati.Posix.Combinators
+module System.Monopati.Posix (
+	-- * CRUD operations for filesystem
+	module System.Monopati.Posix.Calls,
+	-- * Pure combinators
+	module System.Monopati.Posix.Combinators
 	) where
 
 import System.Monopati.Posix.Calls
