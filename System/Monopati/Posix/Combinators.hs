@@ -67,23 +67,23 @@ part x = Outline $ (filter (== '/') x) :< Nothing
 {-| @
 "usr//local///" + "etc///" = "usr///local///etc//"
 @ -}
-(<^>) :: Relative Path To points -> Relative Path To Directory -> Relative Path To points
-Outline this <^> Outline (x :< Nothing)= Outline $ x :< Just this
-Outline this <^> Outline (x :< Just that) = (Outline this <^> Outline that) <^> part x
+(<^>) :: Relative Path To Directory -> Relative Path To points -> Relative Path To points
+Outline (x :< Nothing) <^> Outline that = Outline $ x :< Just that
+Outline (x :< Just this) <^> Outline that = part x <^> (Outline this <^> Outline that)
 
 {-| @
 "//usr///bin///" + "git" = "///usr///bin//git"
 @ -}
-(</>) :: Relative Path To points -> Absolute Path To Directory -> Absolute Path To points
-Outline (x :< Nothing) </> Outline absolute = Outline . (:<) x . Just $ absolute
-Outline (x :< Just xs) </> Outline absolute = Outline xs </> (Outline . (:<) x . Just $ absolute)
+(</>) :: Absolute Path To Directory -> Relative Path To points -> Absolute Path To points
+Outline absolute </> Outline (x :< Nothing) = Outline . (:<) x . Just $ absolute
+Outline absolute </> Outline (x :< Just xs) = (Outline . (:<) x . Just $ absolute) </> Outline xs
 
 {-| @
 "//usr///local///" + "~///etc///" = "///usr///local///etc//"
 @ -}
-(<~/>) :: Homeward Path To points -> Absolute Path To points -> Absolute Path To points
-Outline (x :< Nothing) <~/> Outline absolute= Outline . (:<) x . Just $ absolute
-Outline (x :< Just xs) <~/> Outline absolute= Outline xs <~/> (Outline . (:<) x . Just $ absolute)
+(<~/>) :: Absolute Path To points -> Homeward Path To points -> Absolute Path To points
+Outline absolute <~/> Outline (x :< Nothing) = Outline . (:<) x . Just $ absolute
+Outline absolute <~/> Outline (x :< Just xs) = (Outline . (:<) x . Just $ absolute) <~/> Outline xs
 
 -- | Take parent directory of current pointed entity
 parent :: Absolute Path To points -> Maybe (Absolute Path To Directory)
