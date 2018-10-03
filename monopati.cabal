@@ -24,6 +24,7 @@ library
     KindSignatures
     NoImplicitPrelude
     PackageImports
+    TupleSections
     TypeApplications
     TypeFamilies
   default-language: Haskell2010

@@ -3,17 +3,20 @@ module System.Monopati.Posix.Combinators
 	, Absolute (..), Homeward (..), Relative (..)
 	, part, parent, (<^>), (</>), (<~/>)) where
 
+import "base" Control.Applicative (pure)
 import "base" Data.Eq (Eq ((==)))
 import "base" Data.Foldable (Foldable (foldr))
-import "base" Data.Function ((.), ($), flip)
+import "base" Data.Function ((.), ($), (&), flip)
 import "base" Data.Functor ((<$>))
 import "base" Data.Kind (Type)
 import "base" Data.List (filter, init)
-import "base" Data.Maybe (Maybe (Just, Nothing))
+import "base" Data.Maybe (Maybe (Just, Nothing), maybe)
 import "base" Data.Semigroup (Semigroup ((<>)))
 import "base" Data.String (String)
+import "base" Text.Read (Read (readsPrec))
 import "base" Text.Show (Show (show))
 import "free" Control.Comonad.Cofree (Cofree ((:<)), unwrap)
+import "split" Data.List.Split (endBy, splitOn)
 
 -- | What the path points to?
 data Points = Directory | File
@@ -50,6 +53,40 @@ instance Show (Outline Vague Directory) where
 
 instance Show (Outline Vague File) where
 	show = init . foldr (\x acc -> x <> "/" <> acc) "" . outline
+
+instance Read (Outline Root Directory) where
+	readsPrec _ ('/':[]) = []
+	readsPrec _ ('/':rest) = foldr (\el -> Just . (:<) el) Nothing
+		(endBy "/" rest) & maybe [] (pure . (,[]) . Outline)
+	readsPrec _ _ = []
+
+instance Read (Outline Root File) where
+	readsPrec _ ('/':[]) = []
+	readsPrec _ ('/':rest) = foldr (\el -> Just . (:<) el) Nothing
+		(splitOn "/" rest) & maybe [] (pure . (,[]) . Outline)
+	readsPrec _ _ = []
+
+instance Read (Outline Home Directory) where
+	readsPrec _ ('~':'/':[]) = []
+	readsPrec _ ('~':'/':rest) = foldr (\el -> Just . (:<) el) Nothing
+		(endBy "/" rest) & maybe [] (pure . (,[]) . Outline)
+	readsPrec _ _ = []
+
+instance Read (Outline Home File) where
+	readsPrec _ ('~':'/':[]) = []
+	readsPrec _ ('~':'/':rest) = foldr (\el -> Just . (:<) el) Nothing
+		(splitOn "/" rest) & maybe [] (pure . (,[]) . Outline)
+	readsPrec _ _ = []
+
+instance Read (Outline Vague Directory) where
+	readsPrec _ [] = []
+	readsPrec _ string = foldr (\el -> Just . (:<) el) Nothing
+		(endBy "/" string) & maybe [] (pure . (,[]) . Outline)
+
+instance Read (Outline Vague File) where
+	readsPrec _ [] = []
+	readsPrec _ string = foldr (\el -> Just . (:<) el) Nothing
+		(splitOn "/" string) & maybe [] (pure . (,[]) . Outline)
 
 type family Absolute (path :: Type) (to :: Type) (points :: Points) :: Type where
 	Absolute Path To points = Outline Root points

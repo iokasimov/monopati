@@ -7,3 +7,4 @@
 * Split platform-depends modules on Calls and Combinators
 * Add `current`, `home`, `create`, `come` and `remove` calls
 * Add `parent` combinator
+* Add `Read` instances for paths
