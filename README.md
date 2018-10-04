@@ -12,12 +12,12 @@ The absolute path is just a path relative to the root, the same for the home. Le
 data Origin = Root | Home | Vague
 ```
 
-And a sum type that shown which object we point to:
+And a sum type shows which object we point to:
 ```haskell
 data Points = Directory | File
 ```
 
-We use stack as a core data structure for path, so our type:
+We use stack as a core data structure for path, so our type is:
 ```haskell
 {-# language DataKinds, KindSignatures #-}
 
@@ -47,7 +47,7 @@ Absolute Path To _ + Absolute Path To _ = ???
 Relative Path To _ + Absolute Path To _ = ???
 ```
 
-Based on these rules we can define two main combinators.
+Based on these rules we can define three main combinators. Homeward path is the same as relative path they are different only for type system.
 
 ```haskell
 (<^>) :: Relative Path To Directory -> Relative Path To points -> Relative Path To points
