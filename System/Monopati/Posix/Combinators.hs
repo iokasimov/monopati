@@ -1,7 +1,7 @@
 module System.Monopati.Posix.Combinators
 	( Points (..), Origin (..), To, Path, Outline (..)
 	, Absolute (..), Homeward (..), Relative (..)
-	, part, parent, (<^>), (</>), (<~/>)) where
+	, deeper, part, parent, (<^>), (</>), (<~/>)) where
 
 import "base" Control.Applicative (pure)
 import "base" Data.Eq (Eq ((==)))
