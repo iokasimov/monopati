@@ -125,3 +125,7 @@ Outline absolute <~/> Outline (x :< Just xs) = (Outline . (:<) x . Just $ absolu
 -- | Take parent directory of current pointed entity
 parent :: Absolute Path To points -> Maybe (Absolute Path To Directory)
 parent = (<$>) Outline . unwrap . outline
+
+-- | Take the next piece of relative path
+deeper :: Relative Path To points -> Maybe (Relative Path To points)
+deeper = (<$>) Outline . unwrap . outline

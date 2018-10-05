@@ -5,6 +5,6 @@
 
 # 0.1.2
 * Split platform-depends modules on Calls and Combinators
-* Add `current`, `home`, `create`, `come` and `remove` calls
-* Add `parent` combinator
+* Add `current`, `home`, `create`, `change` and `remove` calls
+* Add `parent` and `deeper` combinators
 * Add `Read` instances for paths

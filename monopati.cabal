@@ -1,5 +1,5 @@
 name:                monopati
-version:             0.1.1
+version:             0.1.2
 synopsis:            Well-typed paths
 description:         Despite the fact that there are a plenty of various well-typed "path" libraries in Haskell, I decided to write new one that I would like to use.
 homepage:            https://github.com/iokasimov/monopati
