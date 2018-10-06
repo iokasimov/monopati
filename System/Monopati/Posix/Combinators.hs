@@ -118,7 +118,7 @@ Outline absolute </> Outline (x :< Just xs) = (Outline . (:<) x . Just $ absolut
 {-| @
 "//usr///local///" + "~///etc///" = "///usr///local///etc//"
 @ -}
-(<~/>) :: Absolute Path To points -> Homeward Path To points -> Absolute Path To points
+(<~/>) :: Absolute Path To Directory -> Homeward Path To points -> Absolute Path To points
 Outline absolute <~/> Outline (x :< Nothing) = Outline . (:<) x . Just $ absolute
 Outline absolute <~/> Outline (x :< Just xs) = (Outline . (:<) x . Just $ absolute) <~/> Outline xs
 
