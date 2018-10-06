@@ -9,7 +9,7 @@ import "base" Data.Foldable (Foldable (foldr))
 import "base" Data.Function ((.), ($), (&), flip)
 import "base" Data.Functor ((<$>))
 import "base" Data.Kind (Type)
-import "base" Data.List (filter, init)
+import "base" Data.List (filter, init, reverse)
 import "base" Data.Maybe (Maybe (Just, Nothing), maybe)
 import "base" Data.Semigroup (Semigroup ((<>)))
 import "base" Data.String (String)
@@ -57,13 +57,13 @@ instance Show (Outline Vague File) where
 instance Read (Outline Root Directory) where
 	readsPrec _ ('/':[]) = []
 	readsPrec _ ('/':rest) = foldr (\el -> Just . (:<) el) Nothing
-		(endBy "/" rest) & maybe [] (pure . (,[]) . Outline)
+		(reverse $ endBy "/" rest) & maybe [] (pure . (,[]) . Outline)
 	readsPrec _ _ = []
 
 instance Read (Outline Root File) where
 	readsPrec _ ('/':[]) = []
 	readsPrec _ ('/':rest) = foldr (\el -> Just . (:<) el) Nothing
-		(splitOn "/" rest) & maybe [] (pure . (,[]) . Outline)
+		(reverse $ splitOn "/" rest) & maybe [] (pure . (,[]) . Outline)
 	readsPrec _ _ = []
 
 instance Read (Outline Home Directory) where
