@@ -4,7 +4,7 @@ module System.Monopati.Posix.Combinators
 	, deeper, part, parent, (<^>), (</>), (<~/>)) where
 
 import "base" Control.Applicative (pure)
-import "base" Data.Eq (Eq ((==)))
+import "base" Data.Eq (Eq ((/=)))
 import "base" Data.Foldable (Foldable (foldr))
 import "base" Data.Function ((.), ($), (&), flip)
 import "base" Data.Functor ((<$>))
@@ -99,7 +99,7 @@ type family Relative (path :: Type) (to :: Type) (points :: Points) :: Type wher
 
 -- | Immerse string into a path, filter slashes
 part :: String -> Outline origin points
-part x = Outline $ (filter (== '/') x) :< Nothing
+part x = Outline $ (filter (/= '/') x) :< Nothing
 
 {-| @
 "usr//local///" + "etc///" = "usr///local///etc//"
