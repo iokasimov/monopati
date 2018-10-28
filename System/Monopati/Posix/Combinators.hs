@@ -34,7 +34,8 @@ data To
 type Path = Cofree Maybe String
 
 -- | The internal type of path representation
-newtype Outline (origin :: Origin) (points :: Points) = Outline { outline :: Path }
+newtype Outline (origin :: Origin) (points :: Points) =
+	Outline { outline :: Path } deriving Eq
 
 instance Show (Outline Root Directory) where
 	show = flip (<>) "/" . foldr (\x acc -> acc <> "/" <> x) "" . outline
