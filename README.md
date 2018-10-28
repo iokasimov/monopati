@@ -29,13 +29,13 @@ Now we need some rules that can help us build valid paths depending on theirs ty
 
 ```haskell
 Relative Path To Directory + Relative Path To Directory = Relative Path To Directory
-"usr/local/" <> "etc/" = "usr/local/etc/"
-Relative Path To Directory + Path Relative File = Path Relative File
-"bin/" <> "git" = "bin/git"
-Path Absolute Directory + Relative Path To Directory = Path Absolute Directory
-"/usr/local/" <> "etc/" = "/usr/local/etc/" =
-Path Absolute Directory + Path Relative File = Path Absolute File
-"/usr/bin/" <> "git" = "/usr/bin/git"
+"usr/local/" + "etc/" = "usr/local/etc/"
+Relative Path To Directory + Relative Path To File = Relative Path To File
+"bin/" + "git" = "bin/git"
+Absolute Path To Directory + Relative Path To Directory = Absolute Path To Directory
+"/usr/local/" + "etc/" = "/usr/local/etc/" =
+Absolute Path To Directory + Relative Path To File = Absolute Path To File
+"/usr/bin/" + "git" = "/usr/bin/git"
 ```
 
 But we can't do this:
@@ -95,8 +95,11 @@ As you can understand, this library motivates you use only absolute paths, but n
 Motivation of using this library
 --------------------------------------------------------------------------------
 
+* Concatenating paths is more efficient, instead of linear time for lists, it's Rope-like structure.
+* It uses three combinators (`<^>`,`</>`,`<~/>`) instead of one for code readability. When you see them in the code you already know which paths you concatenate.
+
 Well, it's easier for me to define what exactly I don't like in another "path"-libraries:
 
-* [`filepath`](https://hackage.haskell.org/package/filepath) - The most popular, but using raw strings
-* [`path`](https://hackage.haskell.org/package/path) - TemplateHaskell (I really hate it), using raw strings in internals
-* [`posix-paths`](https://github.com/JohnLato/posix-paths) - Focusing on performance instead of usage simplicity
+* [`filepath`](https://hackage.haskell.org/package/filepath) - The most popular, but using raw strings.
+* [`path`](https://hackage.haskell.org/package/path) - TemplateHaskell (I really hate it), using raw strings in internals.
+* [`posix-paths`](https://github.com/JohnLato/posix-paths) - Focusing on performance instead of usage simplicity.
