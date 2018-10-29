@@ -1,7 +1,7 @@
 module System.Monopati.Posix.Combinators
 	( Points (..), Origin (..), To, Path, Outline (..)
 	, Absolute (..), Homeward (..), Relative (..)
-	, deeper, part, parent, (<^>), (</>), (<~/>)) where
+	, deeper, part, parent, (<^>), (</>), (</~>)) where
 
 import "base" Control.Applicative (pure)
 import "base" Data.Eq (Eq ((/=)))
@@ -119,9 +119,9 @@ Outline absolute </> Outline (x :< Just xs) = (Outline . (:<) x . Just $ absolut
 {-| @
 "//usr///local///" + "~///etc///" = "///usr///local///etc//"
 @ -}
-(<~/>) :: Absolute Path To Directory -> Homeward Path To points -> Absolute Path To points
-Outline absolute <~/> Outline (x :< Nothing) = Outline . (:<) x . Just $ absolute
-Outline absolute <~/> Outline (x :< Just xs) = (Outline . (:<) x . Just $ absolute) <~/> Outline xs
+(</~>) :: Absolute Path To Directory -> Homeward Path To points -> Absolute Path To points
+Outline absolute </~> Outline (x :< Nothing) = Outline . (:<) x . Just $ absolute
+Outline absolute </~> Outline (x :< Just xs) = (Outline . (:<) x . Just $ absolute) </~> Outline xs
 
 -- | Take parent directory of current pointed entity
 parent :: Absolute Path To points -> Maybe (Absolute Path To Directory)

@@ -10,8 +10,5 @@ main = do
 	hSetBuffering stdout LineBuffering
 	hSetBuffering stderr LineBuffering
 	checkParallel $ Group "Simple Posix tests" [
-		( "concatenate_absolute_and_relative"
-		, concatenate_absolute_and_relative ),
-		( "show_then_read_absolute"
-		, show_then_read_absolute)
-		]
+		("concatenate_absolute_and_relative", concatenate_absolute_and_relative),
+		("show_then_read_absolute", show_then_read_absolute)]

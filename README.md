@@ -52,7 +52,7 @@ Based on these rules we can define three main combinators. Homeward path is the 
 ```haskell
 (<^>) :: Relative Path To Directory -> Relative Path To points -> Relative Path To points
 (</>) :: Absolute Path To Directory -> Relative Path To points -> Absolute Path To points
-(<~/>) :: Absolute Path To Directory -> Homeward Path To points -> Absolute Path To Points
+(</~>) :: Absolute Path To Directory -> Homeward Path To points -> Absolute Path To Points
 ```
 
 Get our hands dirty
@@ -96,7 +96,7 @@ Motivation of using this library
 --------------------------------------------------------------------------------
 
 * Concatenating paths is more efficient, instead of linear time for lists, it's Rope-like structure.
-* It uses three combinators (`<^>`,`</>`,`<~/>`) instead of one for code readability. When you see them in the code you already know which paths you concatenate.
+* It uses three combinators (`<^>`,`</>`,`</~>`) instead of one for code readability. When you see them in the code you already know which paths you concatenate.
 
 Well, it's easier for me to define what exactly I don't like in another "path"-libraries:
 
