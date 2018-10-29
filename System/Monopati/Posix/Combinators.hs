@@ -1,7 +1,7 @@
 module System.Monopati.Posix.Combinators
 	( Points (..), Origin (..), To, Path, Outline (..)
-	, Absolute (..), Homeward (..), Relative (..)
-	, deeper, part, parent, (<^>), (</>), (</~>), (<~^>)) where
+	, Absolute, Currently, Homeward, Relative
+	, deeper, part, parent, (<^>), (</>), (</~>), (<~^>), (</.>), (<.^>)) where
 
 import "base" Control.Applicative (pure)
 import "base" Data.Eq (Eq ((/=)))
@@ -24,6 +24,7 @@ data Points = Directory | File
 -- | What is the beginning of the path?
 data Origin
 	= Root -- ^ (@/@) Starting point for absolute path
+	| Current -- ^ (@~/@) Relatively current working directory
 	| Home -- ^ (@~/@) Indication of home directory
 	| Vague -- ^ Uncertain relative path
 
@@ -42,6 +43,12 @@ instance Show (Outline Root Directory) where
 
 instance Show (Outline Root File) where
 	show = foldr (\x acc -> acc <> "/" <> x) "" . outline
+
+instance Show (Outline Current Directory) where
+	show = (<>) "./" . foldr (\x acc -> x <> "/" <> acc) "" . outline
+
+instance Show (Outline Current File) where
+	show = (<>) "./" . init . foldr (\x acc -> x <> "/" <> acc) "" . outline
 
 instance Show (Outline Home Directory) where
 	show = (<>) "~/" . foldr (\x acc -> x <> "/" <> acc) "" . outline
@@ -65,6 +72,18 @@ instance Read (Outline Root File) where
 	readsPrec _ ('/':[]) = []
 	readsPrec _ ('/':rest) = foldr (\el -> Just . (:<) el) Nothing
 		(reverse $ splitOn "/" rest) & maybe [] (pure . (,[]) . Outline)
+	readsPrec _ _ = []
+
+instance Read (Outline Current Directory) where
+	readsPrec _ ('.':'/':[]) = []
+	readsPrec _ ('.':'/':rest) = foldr (\el -> Just . (:<) el) Nothing
+		(endBy "/" rest) & maybe [] (pure . (,[]) . Outline)
+	readsPrec _ _ = []
+
+instance Read (Outline Current File) where
+	readsPrec _ ('.':'/':[]) = []
+	readsPrec _ ('.':'/':rest) = foldr (\el -> Just . (:<) el) Nothing
+		(splitOn "/" rest) & maybe [] (pure . (,[]) . Outline)
 	readsPrec _ _ = []
 
 instance Read (Outline Home Directory) where
@@ -91,6 +110,9 @@ instance Read (Outline Vague File) where
 
 type family Absolute (path :: Type) (to :: Type) (points :: Points) :: Type where
 	Absolute Path To points = Outline Root points
+
+type family Currently (path :: Type) (to :: Type) (points :: Points) :: Type where
+	Currently Path To points = Outline Current points
 
 type family Homeward (path :: Type) (to :: Type) (points :: Points) :: Type where
 	Homeward Path To points = Outline Home points
@@ -124,11 +146,25 @@ Outline absolute </~> Outline (x :< Nothing) = Outline . (:<) x . Just $ absolut
 Outline absolute </~> Outline (x :< Just xs) = (Outline . (:<) x . Just $ absolute) </~> Outline xs
 
 {-| @
-"~//etc///" "usr///local///" + = "~///etc///usr///local//"
+"~//etc///" + "usr///local///" + = "~///etc///usr///local//"
 @ -}
 (<~^>) :: Homeward Path To Directory -> Relative Path To points -> Homeward Path To points
 Outline (x :< Nothing) <~^> Outline relative = Outline $ x :< Just relative
 Outline (x :< Just homeward) <~^> Outline relative = part x <~^> (Outline homeward <^> Outline relative)
+
+{-| @
+"//usr///local///" + ".///etc///" = "///usr///local///etc//"
+@ -}
+(</.>) :: Absolute Path To Directory -> Homeward Path To points -> Absolute Path To points
+Outline absolute </.> Outline (x :< Nothing) = Outline . (:<) x . Just $ absolute
+Outline absolute </.> Outline (x :< Just xs) = (Outline . (:<) x . Just $ absolute) </.> Outline xs
+
+{-| @
+".//etc///" + "usr///local///" + = ".///etc///usr///local//"
+@ -}
+(<.^>) :: Currently Path To Directory -> Relative Path To points -> Currently Path To points
+Outline (x :< Nothing) <.^> Outline relative = Outline $ x :< Just relative
+Outline (x :< Just homeward) <.^> Outline relative = part x <.^> (Outline homeward <^> Outline relative)
 
 -- | Take parent directory of current pointed entity
 parent :: Absolute Path To points -> Maybe (Absolute Path To Directory)
