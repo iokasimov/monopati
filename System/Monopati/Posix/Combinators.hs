@@ -1,7 +1,7 @@
 module System.Monopati.Posix.Combinators
 	( Points (..), Origin (..), To, Path, Outline (..)
 	, Absolute, Currently, Homeward, Relative, Incompleted
-	, deeper, part, parent, (<^>), (</>), (</~>), (<~^>), (</.>), (<.^>)) where
+	, deeper, part, parent, (<^>), (<.^>), (<~^>), (<^^>), (</>), (</.>), (</~>), (</^>)) where
 
 import "base" Control.Applicative (pure)
 import "base" Data.Eq (Eq ((/=)))
@@ -129,37 +129,36 @@ type family Incompleted (outline :: Origin) :: Constraint where
 part :: String -> Outline origin points
 part x = Outline $ (filter (/= '/') x) :< Nothing
 
-{-| @
-"usr//local///" + "etc///" = "usr///local///etc//"
-@ -}
-(<^>) :: Relative Path To Directory -> Relative Path To points -> Relative Path To points
+-- Add relative path to uncompleted path
+(<^>) :: forall origin points . Incompleted origin =>
+	Outline origin Directory -> Relative Path To points -> Outline origin points
 Outline (x :< Nothing) <^> Outline that = Outline $ x :< Just that
-Outline (x :< Just this) <^> Outline that = part x <^> (Outline this <^> Outline that)
-
--- | Absolutize uncompleted path (Currently | Homeward | Relative)
-(</>) :: forall origin points . Incompleted origin =>
-	Absolute Path To Directory-> Outline origin points -> Absolute Path To points
-Outline absolute </> Outline (x :< Nothing) = Outline . (:<) x . Just $ absolute
-Outline absolute </> Outline (x :< Just xs) = (</>) @origin (Outline . (:<) x . Just $ absolute) $ Outline xs
+Outline (x :< Just this) <^> Outline that = (<^>) (part @origin x)
+	$ (<^>) @Vague (Outline this) (Outline that)
 
 {-| @
-"//usr///bin///" + "git" = "///usr///bin//git"
+".//etc///" + "usr///local///" + = ".///etc///usr///local//"
 @ -}
-(</^>) :: Absolute Path To Directory -> Relative Path To points -> Absolute Path To points
-absolute </^> relative = absolute </> relative
-
-{-| @
-"//usr///local///" + "~///etc///" = "///usr///local///etc//"
-@ -}
-(</~>) :: Absolute Path To Directory -> Homeward Path To points -> Absolute Path To points
-absolute </~> homeward = absolute </> homeward
+(<.^>) :: Currently Path To Directory -> Relative Path To points -> Currently Path To points
+currently <.^> relative = currently <^> relative
 
 {-| @
 "~//etc///" + "usr///local///" + = "~///etc///usr///local//"
 @ -}
 (<~^>) :: Homeward Path To Directory -> Relative Path To points -> Homeward Path To points
-Outline (x :< Nothing) <~^> Outline relative = Outline $ x :< Just relative
-Outline (x :< Just homeward) <~^> Outline relative = part x <~^> (Outline homeward <^> Outline relative)
+homeward <~^> relative = homeward <^> relative
+
+{-| @
+"//etc///" + "usr///local///" + = "~///etc///usr///local//"
+@ -}
+(<^^>) :: Relative Path To Directory -> Relative Path To points -> Relative Path To points
+relative' <^^> relative = relative' <^> relative
+
+-- | Absolutize uncompleted path
+(</>) :: forall origin points . Incompleted origin =>
+	Absolute Path To Directory-> Outline origin points -> Absolute Path To points
+Outline absolute </> Outline (x :< Nothing) = Outline . (:<) x . Just $ absolute
+Outline absolute </> Outline (x :< Just xs) = (</>) @origin (Outline . (:<) x . Just $ absolute) $ Outline xs
 
 {-| @
 "//usr///local///" + ".///etc///" = "///usr///local///etc//"
@@ -168,11 +167,16 @@ Outline (x :< Just homeward) <~^> Outline relative = part x <~^> (Outline homewa
 absolute </.> currently = absolute </> currently
 
 {-| @
-".//etc///" + "usr///local///" + = ".///etc///usr///local//"
+"//usr///local///" + "~///etc///" = "///usr///local///etc//"
 @ -}
-(<.^>) :: Currently Path To Directory -> Relative Path To points -> Currently Path To points
-Outline (x :< Nothing) <.^> Outline relative = Outline $ x :< Just relative
-Outline (x :< Just homeward) <.^> Outline relative = part x <.^> (Outline homeward <^> Outline relative)
+(</~>) :: Absolute Path To Directory -> Homeward Path To points -> Absolute Path To points
+absolute </~> homeward = absolute </> homeward
+
+{-| @
+"//usr///bin///" + "git" = "///usr///bin//git"
+@ -}
+(</^>) :: Absolute Path To Directory -> Relative Path To points -> Absolute Path To points
+absolute </^> relative = absolute </> relative
 
 -- | Take parent directory of current pointed entity
 parent :: Absolute Path To points -> Maybe (Absolute Path To Directory)
