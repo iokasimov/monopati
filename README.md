@@ -6,10 +6,10 @@ Problem description
 --------------------------------------------------------------------------------
 Often (when you write a useful program) you need to do something to the filesystem. Using temporary files, reading directory contents, writing logs - in all of these cases you need to clarify the path. But path can be specified either in absolute or relative form, or be relative to some absolute path called `home`. And it can point either to a directory or a file. Instead of encoding these cases directly as type sums, we will do some trick.
 
-The absolute path is just a path relative to the root, the same for the home. Let's create a type that indicates subject of relativity:
+The absolute path is just a path that relative to the root, the same for the home and current working directory. Let's create a type that indicates subject of relativity:
 
 ```haskell
-data Origin = Root | Home | Vague
+data Origin = Root | Current | Home | Vague
 ```
 
 And a sum type shows which object we point to:
@@ -28,13 +28,13 @@ newtype Outline (origin :: Origin) (points :: Points) =
 Now we need some rules that can help us build valid paths depending on theirs types. So, we can do this:
 
 ```haskell
-Relative Path To Directory + Relative Path To Directory = Relative Path To Directory
+(Currently | Homeward | Relative) Path To Directory + Relative Path To Directory = Relative Path To Directory
 "usr/local/" + "etc/" = "usr/local/etc/"
-Relative Path To Directory + Relative Path To File = Relative Path To File
+(Currently | Homeward | Relative) Path To Directory + Relative Path To File = Relative Path To File
 "bin/" + "git" = "bin/git"
-Absolute Path To Directory + Relative Path To Directory = Absolute Path To Directory
+Absolute Path To Directory + (Currently | Homeward | Relative) Path To Directory = Absolute Path To Directory
 "/usr/local/" + "etc/" = "/usr/local/etc/" =
-Absolute Path To Directory + Relative Path To File = Absolute Path To File
+Absolute Path To Directory + (Currently | Homeward | Relative) Path To File = Absolute Path To File
 "/usr/bin/" + "git" = "/usr/bin/git"
 ```
 
@@ -44,15 +44,27 @@ But we can't do this:
 _ Path To File + _ Path To File = ???
 _ Path To File + _ Path To Directory = ???
 Absolute Path To _ + Absolute Path To _ = ???
-Relative Path To _ + Absolute Path To _ = ???
+(Currently | Homeward | Relative) Path To _ + Absolute Path To _ = ???
 ```
 
-Based on these rules we can define three main combinators. Homeward path is the same as relative path they are different only for type system.
+Based on these rules we can define two generalized combinators. `Currently`, `Homeward` and `Relative` paths are the same, they are different only for type system.
 
 ```haskell
-(<^>) :: Relative Path To Directory -> Relative Path To points -> Relative Path To points
-(</>) :: Absolute Path To Directory -> Relative Path To points -> Absolute Path To points
-(</~>) :: Absolute Path To Directory -> Homeward Path To points -> Absolute Path To Points
+(<^>) :: (Currently | Homeward | Relative) Path To Directory -> Relative Path To points -> Relative Path To points
+(</>) :: Absolute Path To Directory -> (Currently | Homeward | Relative) Path To points -> Absolute Path To points
+```
+
+And, if you want improve your code readability, you can use specialized combinators:
+
+```haskell
+-- Add relative path to incompleted path:
+(<.^>) :: Currently Path To Directory -> Relative Path To points -> Currently Path To points
+(<~^>) :: Homeward Path To Directory -> Relative Path To points -> Homeward Path To points
+(<^^>) :: Relative Path To Directory -> Relative Path To points -> Relative Path To points
+-- Absolutize incompleted path:
+(</.>) :: Absolute Path To Directory -> Currently Path To points -> Absolute Path To points
+(</~>) :: Absolute Path To Directory -> Homeward Path To points -> Absolute Path To points
+(</^>) :: Absolute Path To Directory -> Relative Path To points -> Absolute Path To points
 ```
 
 Get our hands dirty
@@ -96,7 +108,7 @@ Motivation of using this library
 --------------------------------------------------------------------------------
 
 * Concatenating paths is more efficient, instead of linear time for lists, it's Rope-like structure.
-* It uses three combinators (`<^>`,`</>`,`</~>`) instead of one for code readability. When you see them in the code you already know which paths you concatenate.
+* It uses two generalized combinators and six specialized instead of one for code readability. When you see them in the code you already know which paths you concatenate.
 
 Well, it's easier for me to define what exactly I don't like in another "path"-libraries:
 

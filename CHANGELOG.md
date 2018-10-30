@@ -12,5 +12,4 @@
 # 0.1.3
 * Add property tests
 * Rename combinator `<~/>` to `</~>` - absolutizing of homeward path
-* Add new combinator `<~^>` - concatenation of homeward and relative paths
-* Add path relative to the current directory, `</.>` and `<.^>` respective
+* Generalize `<^>` and `</>` with `Incompleted` type family
