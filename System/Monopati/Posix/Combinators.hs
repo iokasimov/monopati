@@ -1,6 +1,6 @@
 module System.Monopati.Posix.Combinators
 	( Points (..), Origin (..), To, Path, Outline (..)
-	, Absolute, Currently, Homeward, Relative
+	, Absolute, Currently, Homeward, Relative, Incompleted
 	, deeper, part, parent, (<^>), (</>), (</~>), (<~^>), (</.>), (<.^>)) where
 
 import "base" Control.Applicative (pure)
@@ -136,19 +136,23 @@ part x = Outline $ (filter (/= '/') x) :< Nothing
 Outline (x :< Nothing) <^> Outline that = Outline $ x :< Just that
 Outline (x :< Just this) <^> Outline that = part x <^> (Outline this <^> Outline that)
 
+-- | Absolutize uncompleted path (Currently | Homeward | Relative)
+(</>) :: forall origin points . Incompleted origin =>
+	Absolute Path To Directory-> Outline origin points -> Absolute Path To points
+Outline absolute </> Outline (x :< Nothing) = Outline . (:<) x . Just $ absolute
+Outline absolute </> Outline (x :< Just xs) = (</>) @origin (Outline . (:<) x . Just $ absolute) $ Outline xs
+
 {-| @
 "//usr///bin///" + "git" = "///usr///bin//git"
 @ -}
-(</>) :: Absolute Path To Directory -> Relative Path To points -> Absolute Path To points
-Outline absolute </> Outline (x :< Nothing) = Outline . (:<) x . Just $ absolute
-Outline absolute </> Outline (x :< Just xs) = (Outline . (:<) x . Just $ absolute) </> Outline xs
+(</^>) :: Absolute Path To Directory -> Relative Path To points -> Absolute Path To points
+absolute </^> relative = absolute </> relative
 
 {-| @
 "//usr///local///" + "~///etc///" = "///usr///local///etc//"
 @ -}
 (</~>) :: Absolute Path To Directory -> Homeward Path To points -> Absolute Path To points
-Outline absolute </~> Outline (x :< Nothing) = Outline . (:<) x . Just $ absolute
-Outline absolute </~> Outline (x :< Just xs) = (Outline . (:<) x . Just $ absolute) </~> Outline xs
+absolute </~> homeward = absolute </> homeward
 
 {-| @
 "~//etc///" + "usr///local///" + = "~///etc///usr///local//"
@@ -160,9 +164,8 @@ Outline (x :< Just homeward) <~^> Outline relative = part x <~^> (Outline homewa
 {-| @
 "//usr///local///" + ".///etc///" = "///usr///local///etc//"
 @ -}
-(</.>) :: Absolute Path To Directory -> Homeward Path To points -> Absolute Path To points
-Outline absolute </.> Outline (x :< Nothing) = Outline . (:<) x . Just $ absolute
-Outline absolute </.> Outline (x :< Just xs) = (Outline . (:<) x . Just $ absolute) </.> Outline xs
+(</.>) :: Absolute Path To Directory -> Currently Path To points -> Absolute Path To points
+absolute </.> currently = absolute </> currently
 
 {-| @
 ".//etc///" + "usr///local///" + = ".///etc///usr///local//"
