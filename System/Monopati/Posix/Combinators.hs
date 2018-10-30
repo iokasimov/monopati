@@ -8,7 +8,7 @@ import "base" Data.Eq (Eq ((/=)))
 import "base" Data.Foldable (Foldable (foldr))
 import "base" Data.Function ((.), ($), (&), flip)
 import "base" Data.Functor ((<$>))
-import "base" Data.Kind (Type)
+import "base" Data.Kind (Constraint, Type)
 import "base" Data.List (filter, init, reverse)
 import "base" Data.Maybe (Maybe (Just, Nothing), maybe)
 import "base" Data.Semigroup (Semigroup ((<>)))
@@ -119,6 +119,11 @@ type family Homeward (path :: Type) (to :: Type) (points :: Points) :: Type wher
 
 type family Relative (path :: Type) (to :: Type) (points :: Points) :: Type where
 	Relative Path To points = Outline Vague points
+
+type family Incompleted (outline :: Origin) :: Constraint where
+	Incompleted Current = ()
+	Incompleted Home = ()
+	Incompleted Vague = ()
 
 -- | Immerse string into a path, filter slashes
 part :: String -> Outline origin points
