@@ -51,6 +51,8 @@ test-suite test
     KindSignatures
     NoImplicitPrelude
     PackageImports
+    RankNTypes
+    ScopedTypeVariables
     TupleSections
     TypeApplications
     TypeFamilies
