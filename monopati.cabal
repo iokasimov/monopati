@@ -32,10 +32,10 @@ library
   default-language: Haskell2010
   exposed-modules:
     System.Monopati.Posix
-    System.Monopati.Windows
-  other-modules:
+    System.Monopati.Posix.Core
     System.Monopati.Posix.Calls
     System.Monopati.Posix.Combinators
+    System.Monopati.Windows
     System.Monopati.Windows.Calls
     System.Monopati.Windows.Combinators
   ghc-options: -fno-warn-tabs

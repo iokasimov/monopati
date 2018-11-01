@@ -13,4 +13,8 @@
 * Add property tests for checking Show and Read instances
 * Rename combinator `<~/>` to `</~>` - absolutizing of homeward path
 * Generalize `<^>` and `</>` with `Incompleted` type family
-* Add new type of path - Currently, depends on current working directory
+* Add new type of path - `Currently`, depends on current working directory
+
+# 0.1.4
+* Add new type of path - `Parental` (`../`)
+* Split `Combinators` module on `Core` and `Combinators`
