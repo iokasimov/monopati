@@ -19,7 +19,7 @@ import "hedgehog" Hedgehog (Gen, Property, assert, forAll, property, success, (=
 import "hedgehog" Hedgehog.Gen (enum, list, string)
 import "hedgehog" Hedgehog.Range (linear)
 
-import System.Monopati.Posix (Absolute, Currently, Homeward, Relative
+import System.Monopati.Posix (Absolute, Current, Homeward, Relative
 	, Path, To, Origin (Root, Vague), Points (Directory, File)
 	, part, (</^>), (<.^>), (<~^>), (<^^>))
 
@@ -32,7 +32,7 @@ generate_absolute = do
 	raw <- list (linear 1 10) (part @Vague @Directory <$> points)
 	pure $ foldr (flip (</^>)) accumulator raw
 
-generate_currently :: Gen (Currently Path To 'Directory)
+generate_currently :: Gen (Current Path To 'Directory)
 generate_currently = do
 	accumulator <- part <$> points
 	raw <- list (linear 1 10) (part @Vague @Directory <$> points)
