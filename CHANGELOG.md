@@ -10,6 +10,6 @@
 * Add `Read` instances for paths
 
 # 0.1.3
-* Add property tests
+* Add property tests for checking Show and Read instances
 * Rename combinator `<~/>` to `</~>` - absolutizing of homeward path
 * Generalize `<^>` and `</>` with `Incompleted` type family
