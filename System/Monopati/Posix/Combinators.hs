@@ -1,7 +1,9 @@
 module System.Monopati.Posix.Combinators
 	( Points (..), Origin (..), To, Path, Outline (..)
-	, Absolute, Current, Homeward, Relative, Incompleted
-	, deeper, part, parent, (<^>), (<.^>), (<~^>), (<^^>), (</>), (</.>), (</~>), (</^>)) where
+	, Absolute, Current, Homeward, Parental, Relative, Incompleted
+	, deeper, part, parent
+	, (<^>), (<.^>), (<~^>), (<..^>), (<^^>)
+	, (</>), (</.>), (</~>), (</..>), (</^>)) where
 
 import "base" Control.Applicative (pure)
 import "base" Data.Eq (Eq ((/=)))
@@ -26,6 +28,7 @@ data Origin
 	= Root -- ^ (@/@) Starting point for absolute path
 	| Now -- ^ (@~/@) Relatively current working directory
 	| Home -- ^ (@~/@) Indication of home directory
+	| Parent -- ^ (@../@) Parent of current working directory
 	| Vague -- ^ Uncertain relative path
 
 -- | Dummy type needed only for beautiful type declarations
@@ -55,6 +58,12 @@ instance Show (Outline Home Directory) where
 
 instance Show (Outline Home File) where
 	show = (<>) "~/" . init . foldr (\x acc -> x <> "/" <> acc) "" . outline
+
+instance Show (Outline Parent Directory) where
+	show = (<>) "../" . foldr (\x acc -> x <> "/" <> acc) "" . outline
+
+instance Show (Outline Parent File) where
+	show = (<>) "../" . init . foldr (\x acc -> x <> "/" <> acc) "" . outline
 
 instance Show (Outline Vague Directory) where
 	show = foldr (\x acc -> x <> "/" <> acc) "" . outline
@@ -98,6 +107,18 @@ instance Read (Outline Home File) where
 		(splitOn "/" rest) & maybe [] (pure . (,[]) . Outline)
 	readsPrec _ _ = []
 
+instance Read (Outline Parent Directory) where
+	readsPrec _ ('.':'.':'/':[]) = []
+	readsPrec _ ('.':'.':'/':rest) = foldr (\el -> Just . (:<) el) Nothing
+		(endBy "/" rest) & maybe [] (pure . (,[]) . Outline)
+	readsPrec _ _ = []
+
+instance Read (Outline Parent File) where
+	readsPrec _ ('.':'.':'/':[]) = []
+	readsPrec _ ('.':'.':'/':rest) = foldr (\el -> Just . (:<) el) Nothing
+		(splitOn "/" rest) & maybe [] (pure . (,[]) . Outline)
+	readsPrec _ _ = []
+
 instance Read (Outline Vague Directory) where
 	readsPrec _ [] = []
 	readsPrec _ string = foldr (\el -> Just . (:<) el) Nothing
@@ -117,12 +138,16 @@ type family Current (path :: Type) (to :: Type) (points :: Points) :: Type where
 type family Homeward (path :: Type) (to :: Type) (points :: Points) :: Type where
 	Homeward Path To points = Outline Home points
 
+type family Parental (path :: Type) (to :: Type) (points :: Points) :: Type where
+	Parental Path To points = Outline Parent points
+
 type family Relative (path :: Type) (to :: Type) (points :: Points) :: Type where
 	Relative Path To points = Outline Vague points
 
 type family Incompleted (outline :: Origin) :: Constraint where
 	Incompleted Now = ()
 	Incompleted Home = ()
+	Incompleted Parent = ()
 	Incompleted Vague = ()
 
 -- | Immerse string into a path, filter slashes
@@ -149,6 +174,12 @@ currently <.^> relative = currently <^> relative
 homeward <~^> relative = homeward <^> relative
 
 {-| @
+"..//etc///" + "usr///local///" + = "..///etc///usr///local//"
+@ -}
+(<..^>) :: Parental Path To Directory -> Relative Path To points -> Parental Path To points
+homeward <..^> relative = homeward <^> relative
+
+{-| @
 "etc//" + "usr///local///" + = "etc///usr///local//"
 @ -}
 (<^^>) :: Relative Path To Directory -> Relative Path To points -> Relative Path To points
@@ -171,6 +202,12 @@ absolute </.> currently = absolute </> currently
 @ -}
 (</~>) :: Absolute Path To Directory -> Homeward Path To points -> Absolute Path To points
 absolute </~> homeward = absolute </> homeward
+
+{-| @
+"//usr///local///" + "..///etc///" = "///usr///local///etc//"
+@ -}
+(</..>) :: Absolute Path To Directory -> Parental Path To points -> Absolute Path To points
+absolute </..> homeward = absolute </> homeward
 
 {-| @
 "//usr///bin///" + "git" = "///usr///bin//git"
