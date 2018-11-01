@@ -129,7 +129,7 @@ type family Incompleted (outline :: Origin) :: Constraint where
 part :: String -> Outline origin points
 part x = Outline $ (filter (/= '/') x) :< Nothing
 
--- Add relative path to uncompleted path
+-- | Add relative path to uncompleted path
 (<^>) :: forall origin points . Incompleted origin =>
 	Outline origin Directory -> Relative Path To points -> Outline origin points
 Outline (x :< Nothing) <^> Outline that = Outline $ x :< Just that
@@ -149,7 +149,7 @@ currently <.^> relative = currently <^> relative
 homeward <~^> relative = homeward <^> relative
 
 {-| @
-"//etc///" + "usr///local///" + = "~///etc///usr///local//"
+"etc//" + "usr///local///" + = "etc///usr///local//"
 @ -}
 (<^^>) :: Relative Path To Directory -> Relative Path To points -> Relative Path To points
 relative' <^^> relative = relative' <^> relative
