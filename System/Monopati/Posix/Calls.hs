@@ -1,4 +1,4 @@
-module System.Monopati.Posix.Calls (current, home, create, change, remove) where
+module System.Monopati.Posix.Calls (Problem (..), current, home, create, change, remove) where
 
 import "base" Data.Bool (Bool (True))
 import "base" Data.Foldable (Foldable (foldr))
@@ -16,6 +16,12 @@ import "split" Data.List.Split (splitOn)
 
 import System.Monopati.Posix.Combinators (Absolute, Homeward, Relative)
 import System.Monopati.Posix.Core (Points (Directory), To, Path, Origin (Root), Outline (Outline))
+
+data Problem
+	= Hardware -- ^ A physical I/O error has occurred: [EIO]
+	| Permission -- ^ The process has insufficient privileges to perform the operation: [EROFS, EACCES, EPERM]
+	| Exhausted -- ^  Insufficient resources are available to perform the operation: [EDQUOT, ENOSPC, ENOMEM, EMLINK]
+	| Missing -- ^ There is no path to the target: [ENOENT, ENOTDIR]
 
 -- | Return Nothing, if current working directory is root (cwd)
 current :: IO (Maybe (Absolute Path To Directory))
@@ -38,6 +44,8 @@ create = createDirectoryIfMissing True . show
 -- | Change directory (cd)
 change :: Absolute Path To Directory -> IO ()
 change = setCurrentDirectory . show
+
+rename :: Absolute Path To Directory -> String -> IO ()
 
 -- | Remove directory (rm -rf)
 remove :: Absolute Path To Directory -> IO ()
