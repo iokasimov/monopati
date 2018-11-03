@@ -13,7 +13,7 @@ import "base" Prelude (undefined)
 import "free" Control.Comonad.Cofree (Cofree ((:<)), unwrap)
 
 import System.Monopati.Posix.Core
-	( Points (..), Origin (..), To, Path, Outline (..)
+	( Points (..), Origin (..), Dummy (To), Path, Outline (..)
 	, Absolute, Current, Homeward, Relative, Incompleted)
 
 -- | Immerse string into a path, filter slashes

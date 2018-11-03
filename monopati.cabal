@@ -17,9 +17,10 @@ source-repository head
   location: https://github.com/iokasimov/monopati.git
 
 library
-  build-depends: base == 4.*, directory, free, split
+  build-depends: base == 4.*, directory, free, peano, split
   default-extensions:
     DataKinds
+    ExistentialQuantification
     FlexibleInstances
     KindSignatures
     NoImplicitPrelude
@@ -43,10 +44,11 @@ library
 test-suite test
   type: exitcode-stdio-1.0
   main-is: Test/Monopati.hs
-  build-depends: base == 4.*, directory, free, split, transformers, hedgehog
+  build-depends: base == 4.*, directory, free, peano, split, transformers, hedgehog
   default-extensions:
     OverloadedStrings
     DataKinds
+    ExistentialQuantification
     FlexibleInstances
     KindSignatures
     NoImplicitPrelude

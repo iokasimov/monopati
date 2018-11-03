@@ -1,5 +1,5 @@
 module System.Monopati.Posix.Core
-	( Points (..), Origin (..), To, Path, Outline (..)
+	( Points (..), Origin (..), Dummy (..), Path, Outline (..)
 	, Absolute, Current, Homeward, Relative, Incompleted) where
 
 import "base" Control.Applicative (pure)
@@ -14,6 +14,7 @@ import "base" Data.String (String)
 import "base" Text.Read (Read (readsPrec))
 import "base" Text.Show (Show (show))
 import "free" Control.Comonad.Cofree (Cofree ((:<)))
+import "peano" Data.Peano (Peano (Zero, Succ))
 import "split" Data.List.Split (endBy, splitOn)
 
 -- | What the path points to?
@@ -27,7 +28,7 @@ data Origin
 	| Vague -- ^ Uncertain relative path
 
 -- | Dummy type needed only for beautiful type declarations
-data To
+data Dummy = For | To
 
 -- | Path is non-empty sequence of folders or file (in the end)
 type Path = Cofree Maybe String
@@ -98,19 +99,25 @@ instance Read (Outline Vague File) where
 	readsPrec _ rest = foldr (\el -> Just . (:<) el) Nothing
 		(splitOn "/" rest) & maybe [] (pure . (,[]) . Outline)
 
-type family Absolute (path :: Type) (to :: Type) (points :: Points) :: Type where
+type family Absolute (path :: Type) (to :: Dummy) (points :: Points) :: Type where
 	Absolute Path To points = Outline Root points
 
-type family Current (path :: Type) (to :: Type) (points :: Points) :: Type where
+type family Current (path :: Type) (to :: Dummy) (points :: Points) :: Type where
 	Current Path To points = Outline Now points
 
-type family Homeward (path :: Type) (to :: Type) (points :: Points) :: Type where
+type family Homeward (path :: Type) (to :: Dummy) (points :: Points) :: Type where
 	Homeward Path To points = Outline Home points
 
-type family Relative (path :: Type) (to :: Type) (points :: Points) :: Type where
+type family Relative (path :: Type) (to :: Dummy) (points :: Points) :: Type where
 	Relative Path To points = Outline Vague points
 
 type family Incompleted (origin :: Origin) :: Constraint where
 	Incompleted Now = ()
 	Incompleted Home = ()
 	Incompleted Vague = ()
+
+data Parent origin points = Incompleted origin =>
+	Parent Peano (Outline origin points)
+
+type family Parental (for :: Dummy) (outline :: Type) :: Type where
+	Parental For (Outline origin points) = Parent origin points

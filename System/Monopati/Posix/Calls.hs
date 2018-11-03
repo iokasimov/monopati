@@ -15,7 +15,7 @@ import "free" Control.Comonad.Cofree (Cofree ((:<)))
 import "split" Data.List.Split (splitOn)
 
 import System.Monopati.Posix.Core
-	( Points (Directory), To, Path, Origin (Root), Outline (Outline)
+	( Points (Directory), Dummy (To), Path, Origin (Root), Outline (Outline)
 	, Absolute, Homeward, Relative)
 
 data Problem

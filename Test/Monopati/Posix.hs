@@ -20,7 +20,7 @@ import "hedgehog" Hedgehog.Gen (enum, list, string)
 import "hedgehog" Hedgehog.Range (linear)
 
 import System.Monopati.Posix (Absolute, Current, Homeward, Relative
-	, Path, To, Origin (Root, Vague), Points (Directory, File)
+	, Path, Dummy (To), Origin (Root, Vague), Points (Directory, File)
 	, part, (</^>), (<.^>), (<~^>), (<^^>))
 
 points :: Gen String
