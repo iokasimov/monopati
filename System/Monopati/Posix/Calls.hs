@@ -45,8 +45,6 @@ create = createDirectoryIfMissing True . show
 change :: Absolute Path To Directory -> IO ()
 change = setCurrentDirectory . show
 
-rename :: Absolute Path To Directory -> String -> IO ()
-
 -- | Remove directory (rm -rf)
 remove :: Absolute Path To Directory -> IO ()
 remove = removeDirectoryRecursive . show
