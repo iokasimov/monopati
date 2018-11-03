@@ -14,8 +14,9 @@ import "directory" System.Directory (createDirectoryIfMissing, getCurrentDirecto
 import "free" Control.Comonad.Cofree (Cofree ((:<)))
 import "split" Data.List.Split (splitOn)
 
-import System.Monopati.Posix.Combinators (Absolute, Homeward, Relative)
-import System.Monopati.Posix.Core (Points (Directory), To, Path, Origin (Root), Outline (Outline))
+import System.Monopati.Posix.Core
+	( Points (Directory), To, Path, Origin (Root), Outline (Outline)
+	, Absolute, Homeward, Relative)
 
 data Problem
 	= Hardware -- ^ A physical I/O error has occurred: [EIO]

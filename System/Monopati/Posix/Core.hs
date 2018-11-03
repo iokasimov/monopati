@@ -1,9 +1,12 @@
-module System.Monopati.Posix.Core (Points (..), Origin (..), To, Path, Outline (..)) where
+module System.Monopati.Posix.Core
+	( Points (..), Origin (..), To, Path, Outline (..)
+	, Absolute, Current, Homeward, Relative, Incompleted) where
 
 import "base" Control.Applicative (pure)
 import "base" Data.Eq (Eq)
 import "base" Data.Foldable (Foldable (foldr))
 import "base" Data.Function ((.), ($), (&), flip)
+import "base" Data.Kind (Constraint, Type)
 import "base" Data.List (init, reverse)
 import "base" Data.Maybe (Maybe (Just, Nothing), maybe)
 import "base" Data.Semigroup (Semigroup ((<>)))
@@ -121,3 +124,20 @@ instance Read (Outline Vague File) where
 	readsPrec _ [] = []
 	readsPrec _ string = foldr (\el -> Just . (:<) el) Nothing
 		(splitOn "/" string) & maybe [] (pure . (,[]) . Outline)
+
+type family Absolute (path :: Type) (to :: Type) (points :: Points) :: Type where
+	Absolute Path To points = Outline Root points
+
+type family Current (path :: Type) (to :: Type) (points :: Points) :: Type where
+	Current Path To points = Outline Now points
+
+type family Homeward (path :: Type) (to :: Type) (points :: Points) :: Type where
+	Homeward Path To points = Outline Home points
+
+type family Relative (path :: Type) (to :: Type) (points :: Points) :: Type where
+	Relative Path To points = Outline Vague points
+
+type family Incompleted (origin :: Origin) :: Constraint where
+	Incompleted Now = ()
+	Incompleted Home = ()
+	Incompleted Vague = ()
