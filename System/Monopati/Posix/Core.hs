@@ -37,35 +37,24 @@ type Path = Cofree Maybe String
 newtype Outline (origin :: Origin) (points :: Points) =
 	Outline { outline :: Path } deriving Eq
 
-instance Show (Outline Root Directory) where
-	show = flip (<>) "/" . foldr (\x acc -> acc <> "/" <> x) "" . outline
+instance Show (Outline Root Directory) where show = flip (<>) "/" . foldaway_reverse
+instance Show (Outline Root File) where show = foldaway_reverse
 
-instance Show (Outline Root File) where
-	show = foldr (\x acc -> acc <> "/" <> x) "" . outline
+instance Show (Outline Now Directory) where show = (<>) "./" . foldaway
+instance Show (Outline Now File) where show = (<>) "./" . init . foldaway
 
-instance Show (Outline Now Directory) where
-	show = (<>) "./" . foldr (\x acc -> x <> "/" <> acc) "" . outline
+instance Show (Outline Home Directory) where show = (<>) "~/" . foldaway
+instance Show (Outline Home File) where show = (<>) "~/" . init . foldaway
 
-instance Show (Outline Now File) where
-	show = (<>) "./" . init . foldr (\x acc -> x <> "/" <> acc) "" . outline
+instance Show (Outline Parent Directory) where show = (<>) "../" . foldaway
+instance Show (Outline Parent File) where show = (<>) "../" . init . foldaway
 
-instance Show (Outline Home Directory) where
-	show = (<>) "~/" . foldr (\x acc -> x <> "/" <> acc) "" . outline
+instance Show (Outline Vague Directory) where show = foldaway
+instance Show (Outline Vague File) where show = init . foldaway
 
-instance Show (Outline Home File) where
-	show = (<>) "~/" . init . foldr (\x acc -> x <> "/" <> acc) "" . outline
-
-instance Show (Outline Parent Directory) where
-	show = (<>) "../" . foldr (\x acc -> x <> "/" <> acc) "" . outline
-
-instance Show (Outline Parent File) where
-	show = (<>) "../" . init . foldr (\x acc -> x <> "/" <> acc) "" . outline
-
-instance Show (Outline Vague Directory) where
-	show = foldr (\x acc -> x <> "/" <> acc) "" . outline
-
-instance Show (Outline Vague File) where
-	show = init . foldr (\x acc -> x <> "/" <> acc) "" . outline
+foldaway, foldaway_reverse :: Outline origin points -> String
+foldaway = foldr (\x acc -> x <> "/" <> acc) "" . outline
+foldaway_reverse = foldr (\x acc -> acc <> "/" <> x) "" . outline
 
 instance Read (Outline Root Directory) where
 	readsPrec _ ('/':[]) = []
