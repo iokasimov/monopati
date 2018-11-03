@@ -24,7 +24,6 @@ data Origin
 	= Root -- ^ (@/@) Starting point for absolute path
 	| Now -- ^ (@~/@) Relatively current working directory
 	| Home -- ^ (@~/@) Indication of home directory
-	| Parent -- ^ (@../@) Parent of current working directory
 	| Vague -- ^ Uncertain relative path
 
 -- | Dummy type needed only for beautiful type declarations
@@ -37,24 +36,21 @@ type Path = Cofree Maybe String
 newtype Outline (origin :: Origin) (points :: Points) =
 	Outline { outline :: Path } deriving Eq
 
-instance Show (Outline Root Directory) where show = flip (<>) "/" . foldaway_reverse
-instance Show (Outline Root File) where show = foldaway_reverse
+instance Show (Outline Root Directory) where show = flip (<>) "/" . show_foldaway_reverse
+instance Show (Outline Root File) where show = show_foldaway_reverse
 
-instance Show (Outline Now Directory) where show = (<>) "./" . foldaway
-instance Show (Outline Now File) where show = (<>) "./" . init . foldaway
+instance Show (Outline Now Directory) where show = (<>) "./" . show_foldaway
+instance Show (Outline Now File) where show = (<>) "./" . init . show_foldaway
 
-instance Show (Outline Home Directory) where show = (<>) "~/" . foldaway
-instance Show (Outline Home File) where show = (<>) "~/" . init . foldaway
+instance Show (Outline Home Directory) where show = (<>) "~/" . show_foldaway
+instance Show (Outline Home File) where show = (<>) "~/" . init . show_foldaway
 
-instance Show (Outline Parent Directory) where show = (<>) "../" . foldaway
-instance Show (Outline Parent File) where show = (<>) "../" . init . foldaway
+instance Show (Outline Vague Directory) where show = show_foldaway
+instance Show (Outline Vague File) where show = init . show_foldaway
 
-instance Show (Outline Vague Directory) where show = foldaway
-instance Show (Outline Vague File) where show = init . foldaway
-
-foldaway, foldaway_reverse :: Outline origin points -> String
-foldaway = foldr (\x acc -> x <> "/" <> acc) "" . outline
-foldaway_reverse = foldr (\x acc -> acc <> "/" <> x) "" . outline
+show_foldaway, show_foldaway_reverse :: Outline origin points -> String
+show_foldaway = foldr (\x acc -> x <> "/" <> acc) "" . outline
+show_foldaway_reverse = foldr (\x acc -> acc <> "/" <> x) "" . outline
 
 instance Read (Outline Root Directory) where
 	readsPrec _ ('/':[]) = []
@@ -92,27 +88,15 @@ instance Read (Outline Home File) where
 		(splitOn "/" rest) & maybe [] (pure . (,[]) . Outline)
 	readsPrec _ _ = []
 
-instance Read (Outline Parent Directory) where
-	readsPrec _ ('.':'.':'/':[]) = []
-	readsPrec _ ('.':'.':'/':rest) = foldr (\el -> Just . (:<) el) Nothing
-		(endBy "/" rest) & maybe [] (pure . (,[]) . Outline)
-	readsPrec _ _ = []
-
-instance Read (Outline Parent File) where
-	readsPrec _ ('.':'.':'/':[]) = []
-	readsPrec _ ('.':'.':'/':rest) = foldr (\el -> Just . (:<) el) Nothing
-		(splitOn "/" rest) & maybe [] (pure . (,[]) . Outline)
-	readsPrec _ _ = []
-
 instance Read (Outline Vague Directory) where
 	readsPrec _ [] = []
-	readsPrec _ string = foldr (\el -> Just . (:<) el) Nothing
-		(endBy "/" string) & maybe [] (pure . (,[]) . Outline)
+	readsPrec _ rest = foldr (\el -> Just . (:<) el) Nothing
+		(endBy "/" rest) & maybe [] (pure . (,[]) . Outline)
 
 instance Read (Outline Vague File) where
 	readsPrec _ [] = []
-	readsPrec _ string = foldr (\el -> Just . (:<) el) Nothing
-		(splitOn "/" string) & maybe [] (pure . (,[]) . Outline)
+	readsPrec _ rest = foldr (\el -> Just . (:<) el) Nothing
+		(splitOn "/" rest) & maybe [] (pure . (,[]) . Outline)
 
 type family Absolute (path :: Type) (to :: Type) (points :: Points) :: Type where
 	Absolute Path To points = Outline Root points
