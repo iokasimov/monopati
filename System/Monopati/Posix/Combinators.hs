@@ -1,5 +1,5 @@
 module System.Monopati.Posix.Combinators
-	( deeper, part, parent
+	( deeper, part, parent, unparent
 	, (<^>), (<.^>), (<~^>), (<^^>)
 	, (</>), (</.>), (</~>), (</^>)) where
 
@@ -11,10 +11,11 @@ import "base" Data.Maybe (Maybe (Just, Nothing))
 import "base" Data.String (String)
 import "base" Prelude (undefined)
 import "free" Control.Comonad.Cofree (Cofree ((:<)), unwrap)
+import "peano" Data.Peano (Peano (Zero, Succ))
 
 import System.Monopati.Posix.Core
-	( Points (..), Origin (..), Dummy (To), Path, Outline (..)
-	, Absolute, Current, Homeward, Relative, Incompleted)
+	( Points (..), Origin (..), Dummy (For, To), Path, Outline (..), Parent (..)
+	, Absolute, Current, Homeward, Relative, Incompleted, Parental)
 
 -- | Immerse string into a path, filter slashes
 part :: String -> Outline origin points
@@ -68,6 +69,11 @@ absolute </~> homeward = absolute </> homeward
 @ -}
 (</^>) :: Absolute Path To Directory -> Relative Path To points -> Absolute Path To points
 absolute </^> relative = absolute </> relative
+
+unparent :: Parental For (Outline origin points) -> Maybe (Outline origin points)
+unparent (Parent Zero outline) = Just outline
+unparent (Parent (Succ n) (Outline (x :< Nothing))) = Nothing
+unparent (Parent (Succ n) (Outline (x :< Just xs))) = unparent . Parent n $ Outline xs
 
 -- | Take parent directory of current pointed entity
 parent :: Absolute Path To points -> Maybe (Absolute Path To Directory)

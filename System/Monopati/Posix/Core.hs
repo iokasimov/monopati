@@ -1,6 +1,6 @@
 module System.Monopati.Posix.Core
-	( Points (..), Origin (..), Dummy (..), Path, Outline (..)
-	, Absolute, Current, Homeward, Relative, Incompleted) where
+	( Points (..), Origin (..), Dummy (..), Path, Outline (..), Parent (..)
+	, Absolute, Current, Homeward, Relative, Incompleted, Parental) where
 
 import "base" Control.Applicative (pure)
 import "base" Data.Eq (Eq)
@@ -14,7 +14,7 @@ import "base" Data.String (String)
 import "base" Text.Read (Read (readsPrec))
 import "base" Text.Show (Show (show))
 import "free" Control.Comonad.Cofree (Cofree ((:<)))
-import "peano" Data.Peano (Peano (Zero, Succ))
+import "peano" Data.Peano (Peano)
 import "split" Data.List.Split (endBy, splitOn)
 
 -- | What the path points to?
