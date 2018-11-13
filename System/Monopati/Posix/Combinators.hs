@@ -70,7 +70,7 @@ absolute </~> homeward = absolute </> homeward
 (</^>) :: Absolute Path To Directory -> Relative Path To points -> Absolute Path To points
 absolute </^> relative = absolute </> relative
 
-unparent :: Parental For (Outline origin points) -> Maybe (Outline origin points)
+unparent :: Parental For (Outline origin Directory) -> Maybe (Outline origin Directory)
 unparent (Parent Zero outline) = Just outline
 unparent (Parent (Succ n) (Outline (x :< Nothing))) = Nothing
 unparent (Parent (Succ n) (Outline (x :< Just xs))) = unparent . Parent n $ Outline xs

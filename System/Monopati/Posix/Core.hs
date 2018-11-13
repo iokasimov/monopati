@@ -111,13 +111,13 @@ instance Read (Outline Vague File) where
 	readsPrec _ rest = foldr (\el -> Just . (:<) el) Nothing
 		(splitOn "/" rest) & maybe [] (pure . (,[]) . Outline)
 
+data Parent origin = Incompleted origin =>
+	Parent Peano (Outline origin Directory)
+
+type family Parental (for :: Dummy) (outline :: Type) :: Type where
+	Parental For (Outline origin Directory) = Parent origin
+
 type family Incompleted (origin :: Origin) :: Constraint where
 	Incompleted Now = ()
 	Incompleted Home = ()
 	Incompleted Vague = ()
-
-data Parent origin points = Incompleted origin =>
-	Parent Peano (Outline origin points)
-
-type family Parental (for :: Dummy) (outline :: Type) :: Type where
-	Parental For (Outline origin points) = Parent origin points
