@@ -7,10 +7,11 @@ import "base" Data.Eq (Eq)
 import "base" Data.Foldable (Foldable (foldr))
 import "base" Data.Function ((.), ($), (&), flip)
 import "base" Data.Kind (Constraint, Type)
-import "base" Data.List (init, reverse)
+import "base" Data.List (init, replicate, reverse)
 import "base" Data.Maybe (Maybe (Just, Nothing), maybe)
 import "base" Data.Semigroup (Semigroup ((<>)))
 import "base" Data.String (String)
+import "base" Prelude (fromEnum)
 import "base" Text.Read (Read (readsPrec))
 import "base" Text.Show (Show (show))
 import "free" Control.Comonad.Cofree (Cofree ((:<)))
@@ -111,13 +112,22 @@ instance Read (Outline Vague File) where
 	readsPrec _ rest = foldr (\el -> Just . (:<) el) Nothing
 		(splitOn "/" rest) & maybe [] (pure . (,[]) . Outline)
 
+type family Incompleted (origin :: Origin) :: Constraint where
+	Incompleted Now = ()
+	Incompleted Home = ()
+	Incompleted Vague = ()
+
 data Parent origin = Incompleted origin =>
 	Parent Peano (Outline origin Directory)
 
 type family Parental (for :: Dummy) (outline :: Type) :: Type where
 	Parental For (Outline origin Directory) = Parent origin
 
-type family Incompleted (origin :: Origin) :: Constraint where
-	Incompleted Now = ()
-	Incompleted Home = ()
-	Incompleted Vague = ()
+instance Show (Parent Now) where
+	show (Parent n raw) = "./" <> (foldr (<>) "" $ replicate (fromEnum n) "../") <> show_foldaway raw
+
+instance Show (Parent Home) where
+	show (Parent n raw) = "~/" <> (foldr (<>) "" $ replicate (fromEnum n) "../") <> show_foldaway raw
+
+instance Show (Parent Vague) where
+	show (Parent n raw) = (foldr (<>) "" $ replicate (fromEnum n) "../") <> show_foldaway raw
