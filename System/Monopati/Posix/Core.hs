@@ -1,6 +1,6 @@
 module System.Monopati.Posix.Core
 	( Points (..), Origin (..), Dummy (..), Path, Outline (..), Parent (..)
-	, Absolute, Current, Homeward, Relative, Incompleted, Parental) where
+	, Absolute, Current, Homeward, Previous, Relative, Incompleted, Parental) where
 
 import "base" Control.Applicative (pure)
 import "base" Data.Eq (Eq)
@@ -23,10 +23,11 @@ data Points = Directory | File
 
 -- | What is the beginning of the path?
 data Origin
-	= Root -- ^ (@/@) Starting point for absolute path
-	| Now -- ^ (@~/@) Relatively current working directory
-	| Home -- ^ (@~/@) Indication of home directory
-	| Vague -- ^ Uncertain relative path
+	= Root -- ^ Starting point for absolute path
+	| Now -- ^ Indication of current working directory
+	| Home -- ^ Indication of home directory
+	| Early -- ^ Indication of previous current working directory
+	| Vague -- ^ For uncertain relative path
 
 -- | Dummy type needed only for beautiful type declarations
 data Dummy = For | To
@@ -96,6 +97,24 @@ instance Read (Outline Home File) where
 		(splitOn "/" rest) & maybe [] (pure . (,[]) . Outline)
 	readsPrec _ _ = []
 
+type family Previous (path :: Type) (to :: Dummy) (points :: Points) :: Type where
+	Previous Path To points = Outline Early points
+
+instance Show (Outline Early Directory) where show = (<>) "-/" . show_foldaway
+instance Show (Outline Early File) where show = (<>) "-/" . init . show_foldaway
+
+instance Read (Outline Early Directory) where
+	readsPrec _ ('-':'/':[]) = []
+	readsPrec _ ('-':'/':rest) = foldr (\el -> Just . (:<) el) Nothing
+		(endBy "/" rest) & maybe [] (pure . (,[]) . Outline)
+	readsPrec _ _ = []
+
+instance Read (Outline Early File) where
+	readsPrec _ ('-':'/':[]) = []
+	readsPrec _ ('-':'/':rest) = foldr (\el -> Just . (:<) el) Nothing
+		(splitOn "/" rest) & maybe [] (pure . (,[]) . Outline)
+	readsPrec _ _ = []
+
 type family Relative (path :: Type) (to :: Dummy) (points :: Points) :: Type where
 	Relative Path To points = Outline Vague points
 
@@ -115,6 +134,7 @@ instance Read (Outline Vague File) where
 type family Incompleted (origin :: Origin) :: Constraint where
 	Incompleted Now = ()
 	Incompleted Home = ()
+	Incompleted Early = ()
 	Incompleted Vague = ()
 
 data Parent origin = Incompleted origin =>
@@ -128,6 +148,9 @@ instance Show (Parent Now) where
 
 instance Show (Parent Home) where
 	show (Parent n raw) = "~/" <> (foldr (<>) "" $ replicate (fromEnum n) "../") <> show_foldaway raw
+
+instance Show (Parent Early) where
+	show (Parent n raw) = "-/" <> (foldr (<>) "" $ replicate (fromEnum n) "../") <> show_foldaway raw
 
 instance Show (Parent Vague) where
 	show (Parent n raw) = (foldr (<>) "" $ replicate (fromEnum n) "../") <> show_foldaway raw

@@ -17,4 +17,5 @@
 
 # 0.1.4
 * Add new type of path - `Parental` (`../`)
+* Add new type of path - `Previous` (`-`)
 * Split `Combinators` module on `Core` and `Combinators`
