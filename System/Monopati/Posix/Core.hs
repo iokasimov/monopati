@@ -1,6 +1,7 @@
 module System.Monopati.Posix.Core
 	( Points (..), Origin (..), Dummy (..), Path, Outline (..), Parent (..)
-	, Absolute, Current, Homeward, Previous, Relative, Incompleted, Parental) where
+	, Absolute, Current, Homeward, Previous, Relative
+    , Incompleted, Certain, Parental) where
 
 import "base" Control.Applicative (pure)
 import "base" Data.Eq (Eq)
@@ -137,20 +138,26 @@ type family Incompleted (origin :: Origin) :: Constraint where
 	Incompleted Early = ()
 	Incompleted Vague = ()
 
-data Parent origin = Incompleted origin =>
-	Parent Peano (Outline origin Directory)
+type family Certain (origin :: Origin) :: Constraint where
+	Certain Root = ()
+	Certain Now = ()
+	Certain Home = ()
+	Certain Early = ()
+
+data Parent origin points = Incompleted origin =>
+	Parent Peano (Outline origin points)
 
 type family Parental (for :: Dummy) (outline :: Type) :: Type where
-	Parental For (Outline origin Directory) = Parent origin
+	Parental For (Outline origin points) = Parent origin points
 
-instance Show (Parent Now) where
+instance Show (Parent Now Directory) where
 	show (Parent n raw) = "./" <> (foldr (<>) "" $ replicate (fromEnum n) "../") <> show_foldaway raw
 
-instance Show (Parent Home) where
+instance Show (Parent Home Directory) where
 	show (Parent n raw) = "~/" <> (foldr (<>) "" $ replicate (fromEnum n) "../") <> show_foldaway raw
 
-instance Show (Parent Early) where
+instance Show (Parent Early Directory) where
 	show (Parent n raw) = "-/" <> (foldr (<>) "" $ replicate (fromEnum n) "../") <> show_foldaway raw
 
-instance Show (Parent Vague) where
+instance Show (Parent Vague Directory) where
 	show (Parent n raw) = (foldr (<>) "" $ replicate (fromEnum n) "../") <> show_foldaway raw
