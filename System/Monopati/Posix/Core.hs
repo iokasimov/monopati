@@ -153,11 +153,23 @@ type family Parental (for :: Dummy) (outline :: Type) :: Type where
 instance Show (Parent Now Directory) where
 	show (Parent n raw) = "./" <> (foldr (<>) "" $ replicate (fromEnum n) "../") <> show_foldaway raw
 
+instance Show (Parent Now File) where
+	show (Parent n raw) = "./" <> (foldr (<>) "" $ replicate (fromEnum n) "../") <> (init $ show_foldaway raw)
+
 instance Show (Parent Home Directory) where
 	show (Parent n raw) = "~/" <> (foldr (<>) "" $ replicate (fromEnum n) "../") <> show_foldaway raw
+
+instance Show (Parent Home File) where
+	show (Parent n raw) = "~/" <> (foldr (<>) "" $ replicate (fromEnum n) "../") <> (init $ show_foldaway raw)
 
 instance Show (Parent Early Directory) where
 	show (Parent n raw) = "-/" <> (foldr (<>) "" $ replicate (fromEnum n) "../") <> show_foldaway raw
 
+instance Show (Parent Early File) where
+	show (Parent n raw) = "-/" <> (foldr (<>) "" $ replicate (fromEnum n) "../") <> (init $ show_foldaway raw)
+
 instance Show (Parent Vague Directory) where
 	show (Parent n raw) = (foldr (<>) "" $ replicate (fromEnum n) "../") <> show_foldaway raw
+
+instance Show (Parent Vague File) where
+	show (Parent n raw) = (foldr (<>) "" $ replicate (fromEnum n) "../") <> (init $ show_foldaway raw)
