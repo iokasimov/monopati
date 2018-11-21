@@ -44,6 +44,9 @@ show_foldaway, show_foldaway_reverse :: Outline origin points -> String
 show_foldaway = foldr (\x acc -> x <> "/" <> acc) "" . outline
 show_foldaway_reverse = foldr (\x acc -> acc <> "/" <> x) "" . outline
 
+generate_parental_string :: Peano -> String
+generate_parental_string n = foldr (<>) "" $ replicate (fromEnum n) "../"
+
 type family Absolute (path :: Type) (to :: Dummy) (points :: Points) :: Type where
 	Absolute Path To points = Outline Root points
 
@@ -151,25 +154,25 @@ type family Parental (for :: Dummy) (outline :: Type) :: Type where
 	Parental For (Outline origin points) = Parent origin points
 
 instance Show (Parent Now Directory) where
-	show (Parent n raw) = "./" <> (foldr (<>) "" $ replicate (fromEnum n) "../") <> show_foldaway raw
+	show (Parent n raw) = "./" <> generate_parental_string n <> show_foldaway raw
 
 instance Show (Parent Now File) where
-	show (Parent n raw) = "./" <> (foldr (<>) "" $ replicate (fromEnum n) "../") <> (init $ show_foldaway raw)
+	show (Parent n raw) = "./" <> generate_parental_string n <> (init $ show_foldaway raw)
 
 instance Show (Parent Home Directory) where
-	show (Parent n raw) = "~/" <> (foldr (<>) "" $ replicate (fromEnum n) "../") <> show_foldaway raw
+	show (Parent n raw) = "~/" <> generate_parental_string n <> show_foldaway raw
 
 instance Show (Parent Home File) where
-	show (Parent n raw) = "~/" <> (foldr (<>) "" $ replicate (fromEnum n) "../") <> (init $ show_foldaway raw)
+	show (Parent n raw) = "~/" <> generate_parental_string n <> (init $ show_foldaway raw)
 
 instance Show (Parent Early Directory) where
-	show (Parent n raw) = "-/" <> (foldr (<>) "" $ replicate (fromEnum n) "../") <> show_foldaway raw
+	show (Parent n raw) = "-/" <> generate_parental_string n <> show_foldaway raw
 
 instance Show (Parent Early File) where
-	show (Parent n raw) = "-/" <> (foldr (<>) "" $ replicate (fromEnum n) "../") <> (init $ show_foldaway raw)
+	show (Parent n raw) = "-/" <> generate_parental_string n <> (init $ show_foldaway raw)
 
 instance Show (Parent Vague Directory) where
-	show (Parent n raw) = (foldr (<>) "" $ replicate (fromEnum n) "../") <> show_foldaway raw
+	show (Parent n raw) = generate_parental_string n <> show_foldaway raw
 
 instance Show (Parent Vague File) where
-	show (Parent n raw) = (foldr (<>) "" $ replicate (fromEnum n) "../") <> (init $ show_foldaway raw)
+	show (Parent n raw) = generate_parental_string n <> (init $ show_foldaway raw)
