@@ -9,7 +9,7 @@ Often (when you write a useful program) you need to do something to the filesyst
 The absolute path is just a path that relative to the root, the same for the home and current working directory. Let's create a type that indicates subject of relativity:
 
 ```haskell
-data Origin = Root | Current | Home | Vague
+data Origin = Root | Now | Home | Early | Vague
 ```
 
 And a sum type shows which object we point to:
@@ -25,16 +25,22 @@ newtype Outline (origin :: Origin) (points :: Points) =
 	Outline { outline :: Cofree Maybe String }
 ```
 
+We can split our paths on groups:
+```haskell
+type Incompleted = Relative | Current | Homeward | Previous
+type Certain = Absolute | Current | Homeward | Previous
+```
+
 Now we need some rules that can help us build valid paths depending on theirs types. So, we can do this:
 
 ```haskell
-(Currently | Homeward | Relative) Path To Directory + Relative Path To Directory = Relative Path To Directory
+Incompleted Path To Directory + Relative Path To Directory = Relative Path To Directory
 "usr/local/" + "etc/" = "usr/local/etc/"
-(Currently | Homeward | Relative) Path To Directory + Relative Path To File = Relative Path To File
+Incompleted Path To Directory + Relative Path To File = Relative Path To File
 "bin/" + "git" = "bin/git"
-Absolute Path To Directory + (Currently | Homeward | Relative) Path To Directory = Absolute Path To Directory
+Absolute Path To Directory + Incompleted Path To Directory = Absolute Path To Directory
 "/usr/local/" + "etc/" = "/usr/local/etc/" =
-Absolute Path To Directory + (Currently | Homeward | Relative) Path To File = Absolute Path To File
+Absolute Path To Directory + Incompleted Path To File = Absolute Path To File
 "/usr/bin/" + "git" = "/usr/bin/git"
 ```
 
@@ -44,25 +50,25 @@ But we can't do this:
 _ Path To File + _ Path To File = ???
 _ Path To File + _ Path To Directory = ???
 Absolute Path To _ + Absolute Path To _ = ???
-(Currently | Homeward | Relative) Path To _ + Absolute Path To _ = ???
+Incompleted Path To _ + Absolute Path To _ = ???
 ```
 
-Based on these rules we can define two generalized combinators. `Currently`, `Homeward` and `Relative` paths are the same, they are different only for type system.
+Based on these rules we can define two generalized combinators. `Current`, `Homeward` and `Relative` paths are the same, they are different only for type system.
 
 ```haskell
-(<^>) :: (Currently | Homeward | Relative) Path To Directory -> Relative Path To points -> Relative Path To points
-(</>) :: Absolute Path To Directory -> (Currently | Homeward | Relative) Path To points -> Absolute Path To points
+(<^>) :: Incompleted Path To Directory -> Relative Path To points -> Relative Path To points
+(</>) :: Absolute Path To Directory -> Incompleted Path To points -> Absolute Path To points
 ```
 
 And, if you want improve your code readability, you can use specialized combinators:
 
 ```haskell
 -- Add relative path to incompleted path:
-(<.^>) :: Currently Path To Directory -> Relative Path To points -> Currently Path To points
+(<.^>) :: Current Path To Directory -> Relative Path To points -> Currently Path To points
 (<~^>) :: Homeward Path To Directory -> Relative Path To points -> Homeward Path To points
 (<^^>) :: Relative Path To Directory -> Relative Path To points -> Relative Path To points
 -- Absolutize incompleted path:
-(</.>) :: Absolute Path To Directory -> Currently Path To points -> Absolute Path To points
+(</.>) :: Absolute Path To Directory -> Current Path To points -> Absolute Path To points
 (</~>) :: Absolute Path To Directory -> Homeward Path To points -> Absolute Path To points
 (</^>) :: Absolute Path To Directory -> Relative Path To points -> Absolute Path To points
 ```
