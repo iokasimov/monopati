@@ -2,9 +2,11 @@ module Test.Monopati.Posix
 	( show_then_read_absolute
 	, show_then_read_current
 	, show_then_read_homeward
+	, show_then_read_previous
 	, show_then_read_relative
 	, generate_parental_current
 	, generate_parental_homeward
+	, generate_parental_previous
 	, generate_parental_relative
 	) where
 
@@ -23,9 +25,9 @@ import "hedgehog" Hedgehog.Gen (enum, list, string)
 import "hedgehog" Hedgehog.Range (linear)
 
 import System.Monopati.Posix
-	( Absolute, Current, Homeward, Relative, Parental, Parent (Parent)
+	( Absolute, Current, Homeward, Previous, Relative, Parental, Parent (Parent)
 	, Path, Dummy (To, For), Origin (Root, Vague), Points (Directory, File)
-	, part, (</^>), (<.^>), (<~^>), (<^^>))
+	, part, (</^>), (<.^>), (<~^>), (<-^>), (<^^>))
 
 points :: Gen String
 points = string (linear 0 100) (enum 'a' 'z')
@@ -48,6 +50,12 @@ generate_homeward = do
 	raw <- list (linear 1 10) (part @Vague @Directory <$> points)
 	pure $ foldr (flip (<~^>)) accumulator raw
 
+generate_previous :: Gen (Previous Path To 'Directory)
+generate_previous = do
+	accumulator <- part <$> points
+	raw <- list (linear 1 10) (part @Vague @Directory <$> points)
+	pure $ foldr (flip (<-^>)) accumulator raw
+
 generate_relative :: Gen (Relative Path To 'Directory)
 generate_relative = do
 	accumulator <- part <$> points
@@ -59,6 +67,9 @@ generate_parental_current = Parent <$> enum 1 10 <*> generate_current
 
 generate_parental_homeward :: Gen (Parental For (Homeward Path To 'Directory))
 generate_parental_homeward = Parent <$> enum 1 10 <*> generate_homeward
+
+generate_parental_previous :: Gen (Parental For (Homeward Path To 'Directory))
+generate_parental_previous = Parent <$> enum 1 10 <*> generate_previous
 
 generate_parental_relative :: Gen (Parental For (Relative Path To 'Directory))
 generate_parental_relative = Parent <$> enum 1 10 <*> generate_relative
@@ -77,6 +88,11 @@ show_then_read_homeward :: Property
 show_then_read_homeward = property $ do
 	homeward <- forAll generate_homeward
 	(read . show) homeward === homeward
+
+show_then_read_previous :: Property
+show_then_read_previous = property $ do
+	previous <- forAll generate_previous
+	(read . show) previous === previous
 
 show_then_read_relative :: Property
 show_then_read_relative = property $ do

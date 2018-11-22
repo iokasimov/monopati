@@ -1,7 +1,7 @@
 module System.Monopati.Posix.Combinators
 	( deeper, part, parent, unparent
-	, (<^>), (<.^>), (<~^>), (<^^>)
-	, (</>), (</.>), (</~>), (</^>)) where
+	, (<^>), (<.^>), (<~^>), (<-^>), (<^^>)
+	, (</>), (</.>), (</~>), (</->), (</^>)) where
 
 import "base" Data.Eq (Eq ((/=)))
 import "base" Data.Function ((.), ($), (&), flip)
@@ -15,7 +15,7 @@ import "peano" Data.Peano (Peano (Zero, Succ))
 
 import System.Monopati.Posix.Core
 	( Points (..), Origin (..), Dummy (For, To), Path, Outline (..), Parent (..)
-	, Absolute, Current, Homeward, Relative, Incompleted, Parental)
+	, Absolute, Current, Homeward, Previous, Relative, Incompleted, Parental)
 
 -- | Immerse string into a path, filter slashes
 part :: String -> Outline origin points
@@ -41,6 +41,12 @@ currently <.^> relative = currently <^> relative
 homeward <~^> relative = homeward <^> relative
 
 {-| @
+"-//etc///" + "usr///local///" + = "-///etc///usr///local//"
+@ -}
+(<-^>) :: Previous Path To Directory -> Relative Path To points -> Previous Path To points
+previous <-^> relative = previous <^> relative
+
+{-| @
 "etc//" + "usr///local///" + = "etc///usr///local//"
 @ -}
 (<^^>) :: Relative Path To Directory -> Relative Path To points -> Relative Path To points
@@ -59,10 +65,16 @@ Outline absolute </> Outline (x :< Just xs) = (</>) @origin (Outline . (:<) x . 
 absolute </.> currently = absolute </> currently
 
 {-| @
-"//usr///local///" + "~///etc///" = "///usr///local///etc//"
+"//usr///local///" + "-///etc///" = "///usr///local///etc//"
 @ -}
 (</~>) :: Absolute Path To Directory -> Homeward Path To points -> Absolute Path To points
 absolute </~> homeward = absolute </> homeward
+
+{-| @
+"//usr///local///" + "~///etc///" = "///usr///local///etc//"
+@ -}
+(</->) :: Absolute Path To Directory -> Previous Path To points -> Absolute Path To points
+absolute </-> previous = absolute </> previous
 
 {-| @
 "//usr///bin///" + "git" = "///usr///bin//git"

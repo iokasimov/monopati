@@ -8,6 +8,7 @@ import Test.Monopati.Posix
 	( show_then_read_absolute
 	, show_then_read_current
 	, show_then_read_homeward
+	, show_then_read_previous
 	, show_then_read_relative )
 
 main = do
@@ -17,4 +18,5 @@ main = do
 		("Show then read absolute", show_then_read_absolute),
 		("Show then read current", show_then_read_current),
 		("Show then read homeward", show_then_read_homeward),
+		("Show then read previous", show_then_read_previous),
 		("Show then read relative", show_then_read_relative)]
