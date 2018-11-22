@@ -53,7 +53,7 @@ Absolute Path To _ + Absolute Path To _ = ???
 Incompleted Path To _ + Absolute Path To _ = ???
 ```
 
-Based on these rules we can define two generalized combinators. `Current`, `Homeward` and `Relative` paths are the same, they are different only for type system.
+Based on these rules we can define two generalized combinators. `Current`, `Homeward`, `Previous` and `Relative` paths are the same internally, they are different only for type system.
 
 ```haskell
 (<^>) :: Incompleted Path To Directory -> Relative Path To points -> Relative Path To points
@@ -66,10 +66,12 @@ And, if you want improve your code readability, you can use specialized combinat
 -- Add relative path to incompleted path:
 (<.^>) :: Current Path To Directory -> Relative Path To points -> Currently Path To points
 (<~^>) :: Homeward Path To Directory -> Relative Path To points -> Homeward Path To points
+(<-^>) :: Previous Path To Directory -> Relative Path To points -> Previous Path To points
 (<^^>) :: Relative Path To Directory -> Relative Path To points -> Relative Path To points
 -- Absolutize incompleted path:
 (</.>) :: Absolute Path To Directory -> Current Path To points -> Absolute Path To points
 (</~>) :: Absolute Path To Directory -> Homeward Path To points -> Absolute Path To points
+(</->) :: Absolute Path To Directory -> Previous Path To points -> Absolute Path To points
 (</^>) :: Absolute Path To Directory -> Relative Path To points -> Absolute Path To points
 ```
 
