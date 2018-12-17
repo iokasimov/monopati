@@ -4,12 +4,11 @@ module System.Monopati.Posix.Combinators
 	, (</>), (</.>), (</~>), (</->), (</^>)) where
 
 import "base" Data.Eq (Eq ((/=)))
-import "base" Data.Function ((.), ($), (&), flip)
+import "base" Data.Function ((.), ($), (&))
 import "base" Data.Functor ((<$>))
 import "base" Data.List (filter)
 import "base" Data.Maybe (Maybe (Just, Nothing))
 import "base" Data.String (String)
-import "base" Prelude (undefined)
 import "free" Control.Comonad.Cofree (Cofree ((:<)), unwrap)
 import "peano" Data.Peano (Peano (Zero, Succ))
 
